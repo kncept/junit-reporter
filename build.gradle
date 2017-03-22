@@ -1,0 +1,143 @@
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'org.junit.platform:junit-platform-gradle-plugin:1.0.0-M3'
+    }
+}
+
+plugins {
+    id "java-gradle-plugin"
+}
+
+//apply plugin: 'java'
+//apply plugin: 'groovy'
+apply plugin: 'eclipse'
+apply plugin: 'idea'
+ 
+apply plugin: 'org.junit.platform.gradle.plugin'
+
+apply plugin: 'maven'
+apply plugin: 'signing'
+
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+group = 'com.kncept.junit5.reporter'
+version = '0.9.1-M3'
+
+
+task javadocJar(type: Jar) {
+    classifier = 'javadoc'
+    from javadoc
+}
+
+task sourcesJar(type: Jar) {
+    classifier = 'sources'
+    from sourceSets.main.allSource
+}
+
+task testSourcesJar(type: Jar) {
+    classifier = 'testsources'
+    from sourceSets.test.allSource
+}
+
+jar.manifest {
+	attributes(
+		'Implementation-Title': project.name,
+		'Implementation-Vendor' : 'kncept',
+		'Implementation-Version': project.version,
+		'Implementation-Author': 'Nicholas Krul', //non standard
+		'Created-By': System.getProperty('java.version'),
+		'Built-By': System.getProperty('user.name'),
+		//'Built-Host': getHostname(),
+		'Built-Date': new Date().format("yyyy-MM-dd'T'HH:mm:ssZ"),
+		'Source-Compatibility': project.sourceCompatibility,
+		'Target-Compatibility': project.targetCompatibility
+	)
+}
+
+artifacts {
+    archives javadocJar, sourcesJar, testSourcesJar
+}
+
+//Allow building but disable signing if the gpg config isn't available
+signing {
+    sign configurations.archives
+}
+signArchives.onlyIf {new File('gradle.properties').exists()}
+
+task wrapper(type: Wrapper) {
+	description = 'gradlew'
+	gradleVersion = '3.4'
+}
+
+repositories {
+	mavenLocal()
+	mavenCentral()
+}
+
+//hoist properties if gradle.properties exists
+String username = null
+String password = null
+if (project.hasProperty('ossrhUsername')) {
+	username = ossrhUsername
+}
+if (project.hasProperty('ossrhPassword')) {
+	password = ossrhPassword
+}
+
+uploadArchives {
+  repositories {
+    mavenDeployer {
+      beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+
+      repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
+        authentication(userName: username, password: password)
+      }
+
+      snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
+        authentication(userName: username, password: password)
+      }
+
+      pom.project {
+        name 'Junit Reporter'
+        packaging 'jar'
+        // optionally artifactId can be defined here 
+        description 'Produces HTML reports from the Junit xml report'
+        url 'https://github.com/kncept/junit-reporter'
+
+        scm {
+          connection 'scm:https://github.com/kncept/junit-reporter.git'
+          developerConnection 'scm:https://github.com/kncept/junit-reporter.git'
+          url 'https://github.com/kncept/junit-reporter'
+        }
+
+        licenses {
+          license {
+            name 'Eclipse Public License - v 1.0'
+            url 'https://github.com/kncept/junit-reporter/blob/master/LICENSE'
+          }
+        }
+
+        developers {
+          developer {
+            id 'nkrul'
+            name 'Nicholas Krul'
+            email 'nicholas.krul@gmail.com'
+          }
+        }
+      }
+    }
+  }
+}
+
+dependencies {
+	//compile gradleApi()
+    compile localGroovy()
+
+	testCompile 'org.junit.jupiter:junit-jupiter-api:5.0.0-M3'
+	testRuntime 'org.junit.jupiter:junit-jupiter-engine:5.0.0-M3'
+}
