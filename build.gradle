@@ -8,11 +8,9 @@ buildscript {
 }
 
 plugins {
-    id "java-gradle-plugin"
+    id 'java-gradle-plugin'
 }
 
-//apply plugin: 'java'
-//apply plugin: 'groovy'
 apply plugin: 'eclipse'
 apply plugin: 'idea'
  
@@ -135,9 +133,10 @@ uploadArchives {
 }
 
 dependencies {
-	//compile gradleApi()
     compile localGroovy()
-
+	compile 'org.jsoup:jsoup:1.10.2'
+    
+	testCompile 'junit:junit:4.12'
 	testCompile 'org.junit.jupiter:junit-jupiter-api:5.0.0-M3'
 	testRuntime 'org.junit.jupiter:junit-jupiter-engine:5.0.0-M3'
 }

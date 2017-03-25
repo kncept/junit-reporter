@@ -6,9 +6,10 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import org.gradle.api.Project;
 import org.gradle.api.Task;
 import org.gradle.api.plugins.JavaPlugin;
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 
-public class TestHTMLReporterPluginTest {
+
+public class J4MainTest {
 
 	@Test
 	public void taskIsAppliedToProject() {
