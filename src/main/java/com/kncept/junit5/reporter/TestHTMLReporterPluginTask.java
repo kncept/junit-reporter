@@ -1,13 +1,18 @@
 package com.kncept.junit5.reporter;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+
+import javax.xml.parsers.ParserConfigurationException;
 
 import org.gradle.api.DefaultTask;
 import org.gradle.api.tasks.TaskAction;
+import org.xml.sax.SAXException;
 
 import com.kncept.junit5.reporter.html.TestHTMLReportWriter;
-import com.kncept.junit5.reporter.xml.JSoupTestResultsXMLReader;
+import com.kncept.junit5.reporter.xml.Junit4DomReader;
 import com.kncept.junit5.reporter.xml.XMLTestResults;
 
 public class TestHTMLReporterPluginTask extends DefaultTask {
@@ -57,7 +62,14 @@ public class TestHTMLReporterPluginTask extends DefaultTask {
 	}
 	
 	private XMLTestResults readFile(File file) throws IOException {
-		return new JSoupTestResultsXMLReader(file);
+		try (InputStream in = new FileInputStream(file)) {
+			return new Junit4DomReader(in);
+		} catch (ParserConfigurationException e) {
+			throw new RuntimeException(e);
+		} catch (SAXException e) {
+			throw new RuntimeException(e);
+		}
+		
 	}
 	
 }

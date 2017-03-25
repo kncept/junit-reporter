@@ -134,7 +134,6 @@ uploadArchives {
 
 dependencies {
     compile localGroovy()
-	compile 'org.jsoup:jsoup:1.10.2'
     
 	testCompile 'junit:junit:4.12'
 	testCompile 'org.junit.jupiter:junit-jupiter-api:5.0.0-M3'
