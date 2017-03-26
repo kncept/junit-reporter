@@ -12,6 +12,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import com.kncept.junit5.reporter.domain.TestCase;
+import com.kncept.junit5.reporter.domain.TestCase.Status;
 
 public class TestHTMLReportWriterTest {
 	private int counter = 0;
@@ -46,7 +47,11 @@ public class TestHTMLReportWriterTest {
 	}
 	
 	private TestCase generateTestCase() {
-		TestCase testcase = new TestCase("testName" + counter, "java.class.name" + counter, new BigDecimal(counter));
+		TestCase testcase = new TestCase(
+				"testName" + counter,
+				"java.class.name" + counter,
+				new BigDecimal(counter),
+				Status.Passed);
 		counter++;
 		return testcase;
 		

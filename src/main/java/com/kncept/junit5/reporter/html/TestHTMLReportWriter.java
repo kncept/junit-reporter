@@ -9,12 +9,15 @@ import java.io.OutputStream;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 import com.kncept.junit5.reporter.domain.TestCase;
+import com.kncept.junit5.reporter.domain.TestCase.Status;
 import com.kncept.junit5.reporter.xml.XMLTestResults;
 
 public class TestHTMLReportWriter {
@@ -48,6 +51,9 @@ public class TestHTMLReportWriter {
 		if (testcases.isEmpty())
 			return;
 		
+		//sort by test name
+		Collections.sort(testcases, (t1, t2) -> {return String.CASE_INSENSITIVE_ORDER.compare(t1.getName(), t2.getName());});
+		
 		File htmlDir = new File(outputDir, category);
 		htmlDir.mkdirs();
 		
@@ -67,7 +73,7 @@ public class TestHTMLReportWriter {
 			while(sysprops.hasNext()) {
 				Map.Entry<String, String> next = sysprops.next();
 				out.print(toJsMap(
-						toJsMapValue("key", next.getKey()),
+						toJsMapValue("name", next.getKey()),
 						toJsMapValue("value", next.getValue())
 				));
 				if(sysprops.hasNext()) {
@@ -78,6 +84,11 @@ public class TestHTMLReportWriter {
 			}
 			out.println("];");
 			
+			SummaryBucket totals = new SummaryBucket("");
+			Map<String, SummaryBucket> byPackage = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
+			Map<String, SummaryBucket> byClass = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
+			
+			
 			Iterator<TestCase> tests = testcases.iterator();
 			out.println("var tests = [");
 			while(tests.hasNext()) {
@@ -86,10 +97,61 @@ public class TestHTMLReportWriter {
 						toJsMapValue("testClass", next.getClassname()),
 						toJsMapValue("testName", next.getName()),
 						toJsMapValue("duration", next.getDuration().toPlainString()),
-						toJsMapValue("status", "passed")
+						toJsMapValue("status", next.getStatus().name())
 				));
 				
+				totals.include(next.getStatus());
+				getSummaryBucket(byPackage, next.getPackagename()).include(next.getStatus());
+				getSummaryBucket(byClass, next.getClassname()).include(next.getStatus());
+				
 				if(tests.hasNext()) {
+					out.println(",");
+				} else {
+					out.println();
+				}
+			}
+			out.println("];");
+			
+			out.print("var totals = ");
+			out.print(toJsMap(
+					toJsMapValue("passed", Integer.toString(totals.passed)),
+					toJsMapValue("skipped", Integer.toString(totals.skipped)),
+					toJsMapValue("failed", Integer.toString(totals.failed)),
+					toJsMapValue("errored", Integer.toString(totals.errored))
+					));
+			out.println(";");
+			
+			Iterator<SummaryBucket> packageSummary = byPackage.values().iterator();
+			out.println("var packageSummary = [");
+			while(packageSummary.hasNext()) {
+				SummaryBucket next = packageSummary.next();
+				out.print(toJsMap(
+						toJsMapValue("key", next.key),
+						toJsMapValue("passed", Integer.toString(next.passed)),
+						toJsMapValue("skipped", Integer.toString(next.skipped)),
+						toJsMapValue("failed", Integer.toString(next.failed)),
+						toJsMapValue("errored", Integer.toString(next.errored))
+						));
+				if(packageSummary.hasNext()) {
+					out.println(",");
+				} else {
+					out.println();
+				}
+			}
+			out.println("];");
+			
+			Iterator<SummaryBucket> classSummary = byClass.values().iterator();
+			out.println("var classSummary = [");
+			while(classSummary.hasNext()) {
+				SummaryBucket next = classSummary.next();
+				out.print(toJsMap(
+						toJsMapValue("key", next.key),
+						toJsMapValue("passed", Integer.toString(next.passed)),
+						toJsMapValue("skipped", Integer.toString(next.skipped)),
+						toJsMapValue("failed", Integer.toString(next.failed)),
+						toJsMapValue("errored", Integer.toString(next.errored))
+						));
+				if(classSummary.hasNext()) {
 					out.println(",");
 				} else {
 					out.println();
@@ -100,6 +162,42 @@ public class TestHTMLReportWriter {
 			out.flush();
 		}
 		
+	}
+	
+	static class SummaryBucket {
+		public final String key;
+		public int passed;
+		public int skipped;
+		public int failed;
+		public int errored;
+		public SummaryBucket(String key) {
+			this.key = key;
+		}
+		public void include(Status status) {
+			switch(status) {
+			case Passed:
+				passed++;
+				break;
+			case Skipped:
+				skipped++;
+				break;
+			case Failed:
+				failed++;
+				break;
+			case Errored:
+				errored++;
+				break;
+			}
+		}
+	}
+	
+	private SummaryBucket getSummaryBucket(Map<String, SummaryBucket> map, String bucketName) {
+		SummaryBucket bucket = map.get(bucketName);
+		if (bucket == null) {
+			bucket = new SummaryBucket(bucketName);
+			map.put(bucketName, bucket);
+		}
+		return bucket;
 	}
 	
 	private String toJsMap(String... mapValues) {

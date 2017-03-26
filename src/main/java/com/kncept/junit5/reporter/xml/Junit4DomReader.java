@@ -20,6 +20,7 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 import com.kncept.junit5.reporter.domain.TestCase;
+import com.kncept.junit5.reporter.domain.TestCase.Status;
 
 public class Junit4DomReader implements XMLTestResults{
 	
@@ -39,12 +40,16 @@ public class Junit4DomReader implements XMLTestResults{
 		nl = doc.getElementsByTagName("testcase");
 		for(int i = 0; i < nl.getLength(); i++) {
 			Node node = nl.item(i);
-			TestCase testCase = new TestCase(attr(node, "name"), attr(node, "classname"), new BigDecimal(attr(node, "time")));
+			Status status = Status.Passed; //default for now...
+			TestCase testCase = new TestCase(
+					attr(node, "name"), 
+					attr(node, "classname"), 
+					new BigDecimal(attr(node, "time")),
+					status);
 			testcases.add(testCase);
 			
 			testCase.getSystemOut().addAll(handleTextNode(child(node, "system-out")));
 			testCase.getSystemErr().addAll(handleTextNode(child(node, "system-err")));
-			
 		}
 		
 	}
