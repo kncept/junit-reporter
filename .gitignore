@@ -9,3 +9,6 @@
 .settings
 .project
 
+#maven deployment stuff
+gradle.properties
+secring.gpg

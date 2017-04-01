@@ -6,13 +6,14 @@ It produces a simple html5/javascript report.
 
 
 Gradle Instructions:
-Add this to your buildscript libraries via the mavenCentral repository:
+Add or merge this to the top of your buildscript libraries via the mavenCentral repository:
 
-    N.B. This is AS YET UNRELEASED...
-    
     buildscript {
         repositories {
             mavenCentral()
+        }
+        dependencies {
+            classpath 'com.kncept.junit5.reporter:junit-reporter:0.9.1-M3'
         }
     }
 
@@ -20,3 +21,4 @@ Then, apply the plugin:
 
     apply plugin: 'com.kncept.junit5.reporter'
 
+This will bind the task 'junit5HTMLReport' to run after the 'check' task.

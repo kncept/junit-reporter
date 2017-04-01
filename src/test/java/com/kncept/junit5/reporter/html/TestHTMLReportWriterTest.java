@@ -1,5 +1,7 @@
 package com.kncept.junit5.reporter.html;
 
+import static com.kncept.junit5.reporter.domain.TestCase.Status.Passed;
+import static org.gradle.internal.impldep.com.google.common.io.Files.createTempDir;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.File;
@@ -7,12 +9,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigDecimal;
 
-import org.gradle.internal.impldep.com.google.common.io.Files;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import com.kncept.junit5.reporter.domain.TestCase;
-import com.kncept.junit5.reporter.domain.TestCase.Status;
 
 public class TestHTMLReportWriterTest {
 	private int counter = 0;
@@ -24,18 +24,18 @@ public class TestHTMLReportWriterTest {
 	}
 	
 	@Test
-	public void canFindTemplates() {
+	public void canFindTemplates() throws Exception {
 		TestHTMLReportWriter writer = new TestHTMLReportWriter("");
 		try (InputStream template = writer.getTemplate("index.html")) {
 			Assertions.assertNotNull(template);
-		} catch (IOException e) {}
+		} catch (IOException e) {
+			throw e;
+		}
 	}
 	
 	@Test
-	public void writesEnougFiles() throws IOException {
-		File htmlDir = Files.createTempDir();
-		System.out.println("HTML reports in " + htmlDir.getAbsolutePath());
-		
+	public void writesEnoughFiles() throws IOException {
+		File htmlDir = createTempDir();
 		TestHTMLReportWriter writer = new TestHTMLReportWriter("junit-platform");
 		
 		writer.include(generateTestCase());
@@ -50,7 +50,7 @@ public class TestHTMLReportWriterTest {
 				"testName" + counter,
 				"java.class.name" + counter,
 				new BigDecimal(counter),
-				Status.Passed);
+				Passed);
 		counter++;
 		return testcase;
 		
