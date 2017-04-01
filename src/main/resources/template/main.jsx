@@ -5,7 +5,6 @@ ReactDOM.render(
     <span>
         <h1>Test Results</h1>
         <div id="summary"></div>
-        <div id="properties-detail"></div>
         <div id="test-detail"></div>
     </span>,
         document.getElementById('root'));
@@ -39,36 +38,6 @@ var classSummaryHeaders = [
     {key: 'errored', label: 'Errored'}
 ];
 
-var ShowHide = React.createClass({
-    getInitialState: function () {
-        return { childVisible: false };
-    },
-    render: function() {
-        if (this.state.childVisible) {
-            return (
-                <div>
-                    <span>{this.props.header}</span>
-                    <a href="#" onClick={this.onClick} className="showhide-toggle">(click to hide)</a>
-                    <div>{this.props.children}</div>
-                    <a href="#" onClick={this.onClick} className="showhide-toggle">(click to hide)</a>
-                </div>
-            )
-        } else {
-            return (
-                <div>
-                    <span>{this.props.header}</span>
-                    <a href="#" onClick={this.onClick} className="showhide-toggle">(click to show)</a>
-                </div>
-            )
-        }
-    },
-    onClick: function() {
-      this.setState({childVisible: !this.state.childVisible});
-    }
-});
-
-
-
 var Tabs = React.createClass({
     getInitialState: function() {
         return {index: 0};
@@ -80,46 +49,29 @@ var Tabs = React.createClass({
     },
     render: function() {
         return (
-            <div>
-                <span>{
-                this.props.titles.map((title, index) =>
-                    <span key={index} className="tabTitle"><a href="#" onClick={() => this.switchTab(index)}>{title}</a></span>
-                )
-                }</span>
+            <div className="tabPane">
+                <div className="tabHeaders">{
+                    this.props.titles.map((title, index) => 
+                        <span key={index} className={index != this.state.index ? "tabTitle" : "tabTitle selectedTabTitle"}><a href="#" onClick={() => this.switchTab(index)}>{title}</a></span>
+                    )}
+                </div><div className="tabContent">
                 {this.props.children[this.state.index]}
-            </div>
+            </div></div>
         );
-        
     },
     switchTab: function(newIndex) {
       this.setState({index: newIndex});
     }
 });
 
-
-if (sysprops.length != 0) {
-    ReactDOM.render(
-            <ShowHide header="System Properties">
-                <JsonTable rows={sysprops} columns={propertiesHeaders} />
-            </ShowHide>, 
-              document.getElementById('properties-detail'));
-} else  {
-    ReactDOM.render(
-            <div>No system properties recorded</div>,
-            document.getElementById('properties-detail'));
-}
-
-//ReactDOM.render(
-//    <JsonTable rows={ tests } columns={ testHeaders } />, 
-//    document.getElementById('test-detail'));
-
 ReactDOM.render(
     <Tabs   
-        titles={['Packages','Classs','Tests']}
+        titles={['Packages', 'Classs', 'Tests', 'System Properties']}
     >
         <JsonTable rows={packageSummary} columns={packageSummaryHeaders} />
         <JsonTable rows={classSummary} columns={classSummaryHeaders} />
         <JsonTable rows={tests} columns={testHeaders} />
+        <JsonTable rows={sysprops} columns={propertiesHeaders} />
     </Tabs>, 
         document.getElementById('test-detail'));
 

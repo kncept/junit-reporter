@@ -1,4 +1,23 @@
 
-div#detail {
-	display: table;
+
+/** https://www.w3schools.com/cssref/css_colors.asp **/
+.tabPane {
+	background-color: LightGray;
+}
+.tabHeaders {
+	padding-bottom: 5px;
+}
+.tabTitle {
+	padding-left: 5px;
+	padding-right: 5px;
+	border: 1px solid Green;
+	
+	text-align: center;
+	background-color: Lime;
+}
+
+.selectedTabTitle {
+	background-color: LightGray;
+	border: none;
+	font-weight: bold;
 }
