@@ -15,24 +15,42 @@ var propertiesHeaders = [
 
 var testHeaders = [
     {key: 'testClass', label: 'Class'},
-
     {key: 'testName', label: 'Name'},
-    {key: 'duration', label: 'Duration'},
+    {key: 'status', label: 'Status', cell: function(item){
+        return <span className={item.status == 'Passed' ? "g" : (item.status == 'Skipped' ? "a" : "r")}>{item.status}</span>;
+    }},
+    {key: 'duration', label: 'Duration'}
 ];
                               
 var packageSummaryHeaders = [
     {key: 'key', label: 'Package Name'},
-    {key: 'passed', label: 'Passed'},
-    {key: 'skipped', label: 'Skipped'},
-    {key: 'failed', label: 'Failed'},
-    {key: 'errored', label: 'Errored'}
+    {key: 'passed', label: 'Passed', cell: function (item) {
+        return <span className={item.passed == item.available ? "g" : "r"}>{item.passed}</span>;
+    }},
+    {key: 'skipped', label: 'Skipped', cell: function (item) {
+        return <span className={item.skipped == 0 ? "" : "r"}>{item.skipped}</span>;
+    }},
+    {key: 'failed', label: 'Failed', cell: function (item) {
+        return <span className={item.failed == 0 ? "" : "r"}>{item.failed}</span>;
+    }},
+    {key: 'errored', label: 'Errored', cell: function (item) {
+        return <span className={item.errored == 0 ? "" : "r"}>{item.errored}</span>;
+    }}
 ];
 var classSummaryHeaders = [
     {key: 'key', label: 'Class Name'},
-    {key: 'passed', label: 'Passed'},
-    {key: 'skipped', label: 'Skipped'},
-    {key: 'failed', label: 'Failed'},
-    {key: 'errored', label: 'Errored'}
+    {key: 'passed', label: 'Passed', cell: function (item) {
+        return <span className={item.passed == item.available ? "g" : "r"}>{item.passed}</span>;
+    }},
+    {key: 'skipped', label: 'Skipped', cell: function (item) {
+        return <span className={item.skipped == 0 ? "" : "r"}>{item.skipped}</span>;
+    }},
+    {key: 'failed', label: 'Failed', cell: function (item) {
+        return <span className={item.failed == 0 ? "" : "r"}>{item.failed}</span>;
+    }},
+    {key: 'errored', label: 'Errored', cell: function (item) {
+        return <span className={item.errored == 0 ? "" : "r"}>{item.errored}</span>;
+    }}
 ];
 
 var Tabs = React.createClass({
@@ -62,8 +80,6 @@ var Tabs = React.createClass({
 });
 
 
-totals.percent = 100 * Number(totals.passed) / (Number(totals.passed) + Number(totals.failed) + Number(totals.errored));
-
 ReactDOM.render(
     <Tabs   
         titles={['Summary', 'Packages', 'Classs', 'Tests', 'System Properties']}
@@ -71,13 +87,13 @@ ReactDOM.render(
         <div className="totals">
             <span className="totalCounts">
                 <table>
-                <tr><td>passed:</td><td className={totals.percent == 100 ? "g" : "r"}>{totals.passed}</td></tr>
-                <tr><td>skipped:</td><td className={totals.skipped == 0 ? "g" : "a"}>{totals.skipped}</td></tr>
-                <tr><td>failed:</td><td className={totals.failed == 0 ? "g" : "r"}>{totals.failed}</td></tr>
-                <tr><td>errored:</td><td className={totals.errored == 0 ? "g" : "r"}>{totals.errored}</td></tr>
+                <tr><td>passed:</td><td className={totals.passed == totals.executed ? "g" : "r"}>{totals.passed}</td></tr>
+                <tr><td>skipped:</td><td className={totals.skipped == 0 ? "" : "a"}>{totals.skipped}</td></tr>
+                <tr><td>failed:</td><td className={totals.failed == 0 ? "" : "r"}>{totals.failed}</td></tr>
+                <tr><td>errored:</td><td className={totals.errored == 0 ? "" : "r"}>{totals.errored}</td></tr>
                 </table>
             </span><span className="totalPercent">
-                <div>Success Rate: <span className={totals.percent == 100 ? "g" : "r"}>{totals.percent}%</span></div>
+                <div>Success Rate: <span className={totals.passed == totals.executed ? "g" : "r"}>{100 * Number(totals.passed) / Number(totals.executed)}%</span></div>
             </span>
         </div>
         <JsonTable rows={packageSummary} columns={packageSummaryHeaders} />

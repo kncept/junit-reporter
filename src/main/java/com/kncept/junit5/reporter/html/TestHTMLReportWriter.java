@@ -117,7 +117,9 @@ public class TestHTMLReportWriter {
 					toJsMapValue("passed", Integer.toString(totals.passed)),
 					toJsMapValue("skipped", Integer.toString(totals.skipped)),
 					toJsMapValue("failed", Integer.toString(totals.failed)),
-					toJsMapValue("errored", Integer.toString(totals.errored))
+					toJsMapValue("errored", Integer.toString(totals.errored)),
+					toJsMapValue("available", Integer.toString(totals.passed + totals.skipped + totals.failed + totals.errored)),
+					toJsMapValue("executed", Integer.toString(totals.passed + totals.failed + totals.errored))
 					));
 			out.println(";");
 			
@@ -130,7 +132,9 @@ public class TestHTMLReportWriter {
 						toJsMapValue("passed", Integer.toString(next.passed)),
 						toJsMapValue("skipped", Integer.toString(next.skipped)),
 						toJsMapValue("failed", Integer.toString(next.failed)),
-						toJsMapValue("errored", Integer.toString(next.errored))
+						toJsMapValue("errored", Integer.toString(next.errored)),
+						toJsMapValue("available", Integer.toString(next.passed + next.skipped + next.failed + next.errored)),
+						toJsMapValue("executed", Integer.toString(next.passed + next.failed + next.errored))
 						));
 				if(packageSummary.hasNext()) {
 					out.println(",");
@@ -149,7 +153,9 @@ public class TestHTMLReportWriter {
 						toJsMapValue("passed", Integer.toString(next.passed)),
 						toJsMapValue("skipped", Integer.toString(next.skipped)),
 						toJsMapValue("failed", Integer.toString(next.failed)),
-						toJsMapValue("errored", Integer.toString(next.errored))
+						toJsMapValue("errored", Integer.toString(next.errored)),
+						toJsMapValue("available", Integer.toString(next.passed + next.skipped + next.failed + next.errored)),
+						toJsMapValue("executed", Integer.toString(next.passed + next.failed + next.errored))
 						));
 				if(classSummary.hasNext()) {
 					out.println(",");
