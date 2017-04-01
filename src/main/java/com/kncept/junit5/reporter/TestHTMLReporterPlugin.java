@@ -13,10 +13,9 @@ public class TestHTMLReporterPlugin implements Plugin<Project> {
 		TestHTMLReporterPluginTask junit5HTMLReport = project.getTasks().create("junit5HTMLReport", TestHTMLReporterPluginTask.class);
 
 		//can throw UnknownTaskException
-		Task test = project.getTasks().getByName("test");
+		Task test = project.getTasks().getByName("check");
 		junit5HTMLReport.dependsOn(test);
-		Task assemble = project.getTasks().getByName("assemble");
-		assemble.dependsOn(junit5HTMLReport);
+		test.finalizedBy(junit5HTMLReport);
 	}
 
 }

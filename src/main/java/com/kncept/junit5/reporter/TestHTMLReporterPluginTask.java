@@ -16,10 +16,15 @@ import com.kncept.junit5.reporter.xml.Junit4DomReader;
 import com.kncept.junit5.reporter.xml.XMLTestResults;
 
 public class TestHTMLReporterPluginTask extends DefaultTask {
+	
+	public TestHTMLReporterPluginTask() {
+		super();
+		setGroup("documentation");
+		setDescription("Parses the JUnit5 produced test xml and produces a simple html report");
+	}
 
 	@TaskAction
 	public void generateJunitReport() throws IOException {
-		
 		//stub
 		TestHTMLReporterExtension settings = (TestHTMLReporterExtension)getProject().getExtensions().getByName("junit5HTMLReportSettings");
 		
@@ -30,8 +35,6 @@ public class TestHTMLReporterPluginTask extends DefaultTask {
 		//junit 4: test-results/test
 			// 1 file per class
 			//reports/tests/test
-		
-		System.out.println("build dir = " + buildDir.getPath());
 		
 		if (settings == null)
 			System.out.println("settings is null");
