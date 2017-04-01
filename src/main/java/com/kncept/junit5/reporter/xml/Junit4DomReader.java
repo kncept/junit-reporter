@@ -40,7 +40,27 @@ public class Junit4DomReader implements XMLTestResults{
 		nl = doc.getElementsByTagName("testcase");
 		for(int i = 0; i < nl.getLength(); i++) {
 			Node node = nl.item(i);
-			Status status = Status.Passed; //default for now...
+			
+			Status status = Status.Passed; //default output is success.
+			
+			Node skippedNode = child(node, "skipped");
+//			<skipped><![CDATA[public void com.kncept.junit5.reporter.J5T2Test.skippedTest() is @Disabled]]></skipped>
+			if (skippedNode != null) {
+				status = Status.Skipped;
+			}
+			
+			Node failureNode = child(node, "failure");
+//			<failure message="Failure Message passed into Assertions.fail" type="org.opentest4j.AssertionFailedError"><![CDATA[org.opentest4j.AssertionFailedError: Failure Message passed into Assertions.fail
+			if (failureNode != null) {
+				status = Status.Failed;
+			}
+			
+			Node errorNode = child(node, "error");
+//			<error message="RuntimeException message" type="java.lang.RuntimeException"><![CDATA[java.lang.RuntimeException: RuntimeException message
+			if (errorNode != null) {
+				status = Status.Errored;
+			}
+			
 			TestCase testCase = new TestCase(
 					attr(node, "name"), 
 					attr(node, "classname"), 

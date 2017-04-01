@@ -32,7 +32,6 @@ public class TestHTMLReportWriterTest {
 	}
 	
 	@Test
-	@org.junit.Test
 	public void writesEnougFiles() throws IOException {
 		File htmlDir = Files.createTempDir();
 		System.out.println("HTML reports in " + htmlDir.getAbsolutePath());

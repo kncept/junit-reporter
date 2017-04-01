@@ -1,21 +1,88 @@
+// THIS IS A SAMPLE FILE. 
+
 var sysprops = [
 { name: 'awt.toolkit', value: 'sun.awt.X11.XToolkit'},
 { name: 'file.encoding', value: 'UTF-8'},
-{ name: 'file.encoding.pkg', value: 'sun.io'}
+{ name: 'file.encoding.pkg', value: 'sun.io'},
+{ name: 'file.separator', value: '/'},
+{ name: 'java.awt.graphicsenv', value: 'sun.awt.X11GraphicsEnvironment'},
+{ name: 'java.awt.printerjob', value: 'sun.print.PSPrinterJob'},
+{ name: 'java.class.path', value: '/home/ebola/git/junit-reporter/build/classes/test:/home/ebola/git/junit-reporter/build/resources/test:/home/ebola/git/junit-reporter/build/classes/main:/home/ebola/git/junit-reporter/build/resources/main:/home/ebola/git/junit-reporter/build/pluginUnderTestMetadata:/home/ebola/.gradle/caches/3.4/generated-gradle-jars/gradle-test-kit-3.4.jar:/home/ebola/.gradle/caches/3.4/generated-gradle-jars/gradle-api-3.4.jar:/home/ebola/.gradle/wrapper/dists/gradle-3.4-bin/aeufj4znodijbvwfbsq3044r0/gradle-3.4/lib/groovy-all-2.4.7.jar:/home/ebola/.gradle/wrapper/dists/gradle-3.4-bin/aeufj4znodijbvwfbsq3044r0/gradle-3.4/lib/gradle-installation-beacon-3.4.jar:/home/ebola/.gradle/caches/modules-2/files-2.1/junit/junit/4.12/2973d150c0dc1fefe998f834810d68f278ea58ec/junit-4.12.jar:/home/ebola/.gradle/caches/modules-2/files-2.1/org.junit.jupiter/junit-jupiter-api/5.0.0-M3/a0f3d812b3f3b394f0f6b1998f706a3685b28cbe/junit-jupiter-api-5.0.0-M3.jar:/home/ebola/.gradle/caches/modules-2/files-2.1/org.junit.jupiter/junit-jupiter-engine/5.0.0-M3/f16a093cdb429dd643638f2f4c617f70568fb3/junit-jupiter-engine-5.0.0-M3.jar:/home/ebola/.gradle/caches/modules-2/files-2.1/org.hamcrest/hamcrest-core/1.3/42a25dc3219429f0e5d060061f71acb49bf010a0/hamcrest-core-1.3.jar:/home/ebola/.gradle/caches/modules-2/files-2.1/org.opentest4j/opentest4j/1.0.0-M1/b091255eafd515995a5c5fa042cd8db6f4860bf6/opentest4j-1.0.0-M1.jar:/home/ebola/.gradle/caches/modules-2/files-2.1/org.junit.platform/junit-platform-commons/1.0.0-M3/d5c77e2df6a820ae30fc17f21a3f8cfc03183980/junit-platform-commons-1.0.0-M3.jar:/home/ebola/.gradle/caches/modules-2/files-2.1/org.junit.platform/junit-platform-engine/1.0.0-M3/39a1db55680c9f32985c84ba2951912138b18ac3/junit-platform-engine-1.0.0-M3.jar:/home/ebola/.gradle/caches/modules-2/files-2.1/org.junit.platform/junit-platform-launcher/1.0.0-M3/86525f5274dee56f533f938f9aeae9a3716f8c4/junit-platform-launcher-1.0.0-M3.jar:/home/ebola/.gradle/caches/modules-2/files-2.1/org.junit.platform/junit-platform-console/1.0.0-M3/fec4071130bcec4081b868a59fa6cad47f11733/junit-platform-console-1.0.0-M3.jar'},
+{ name: 'java.class.version', value: '53.0'},
+{ name: 'java.home', value: '/usr/lib/jvm/java-9-openjdk-amd64'},
+{ name: 'java.io.tmpdir', value: '/tmp'},
+{ name: 'java.library.path', value: '/usr/java/packages/lib/amd64:/usr/lib/x86_64-linux-gnu/jni:/lib/x86_64-linux-gnu:/usr/lib/x86_64-linux-gnu:/usr/lib/jni:/lib:/usr/lib'},
+{ name: 'java.runtime.name', value: 'OpenJDK Runtime Environment'},
+{ name: 'java.runtime.version', value: '9-internal+0-2016-04-14-195246.buildd.src'},
+{ name: 'java.specification.name', value: 'Java Platform API Specification'},
+{ name: 'java.specification.vendor', value: 'Oracle Corporation'},
+{ name: 'java.specification.version', value: '9'},
+{ name: 'java.vendor', value: 'Oracle Corporation'},
+{ name: 'java.vendor.url', value: 'http://java.oracle.com/'},
+{ name: 'java.vendor.url.bug', value: 'http://bugreport.java.com/bugreport/'},
+{ name: 'java.version', value: '9-internal'},
+{ name: 'java.vm.compressedOopsMode', value: '32-bit'},
+{ name: 'java.vm.info', value: 'mixed mode'},
+{ name: 'java.vm.name', value: 'OpenJDK 64-Bit Server VM'},
+{ name: 'java.vm.specification.name', value: 'Java Virtual Machine Specification'},
+{ name: 'java.vm.specification.vendor', value: 'Oracle Corporation'},
+{ name: 'java.vm.specification.version', value: '9'},
+{ name: 'java.vm.vendor', value: 'Oracle Corporation'},
+{ name: 'java.vm.version', value: '9-internal+0-2016-04-14-195246.buildd.src'},
+{ name: 'jdk.debug', value: 'release'},
+{ name: 'library.jansi.path', value: '/tmp/gradle1130810699219178395projectDir/userHome/native/jansi/null/linux64'},
+{ name: 'line.separator', value: ' '},
+{ name: 'os.arch', value: 'amd64'},
+{ name: 'os.name', value: 'Linux'},
+{ name: 'os.version', value: '4.4.0-70-generic'},
+{ name: 'path.separator', value: ':'},
+{ name: 'sun.arch.data.model', value: '64'},
+{ name: 'sun.boot.library.path', value: '/usr/lib/jvm/java-9-openjdk-amd64/lib/amd64'},
+{ name: 'sun.cpu.endian', value: 'little'},
+{ name: 'sun.cpu.isalist', value: ''},
+{ name: 'sun.desktop', value: 'gnome'},
+{ name: 'sun.io.unicode.encoding', value: 'UnicodeLittle'},
+{ name: 'sun.java.command', value: 'org.junit.platform.console.ConsoleLauncher --hide-details --scan-class-path /home/ebola/git/junit-reporter/build/classes/main:/home/ebola/git/junit-reporter/build/resources/main:/home/ebola/git/junit-reporter/build/classes/test:/home/ebola/git/junit-reporter/build/resources/test -n ^.*Tests?$ --reports-dir /home/ebola/git/junit-reporter/build/test-results/junit-platform'},
+{ name: 'sun.java.launcher', value: 'SUN_STANDARD'},
+{ name: 'sun.jnu.encoding', value: 'UTF-8'},
+{ name: 'sun.management.compiler', value: 'HotSpot 64-Bit Tiered Compilers'},
+{ name: 'sun.os.patch.level', value: 'unknown'},
+{ name: 'user.country', value: 'GB'},
+{ name: 'user.dir', value: '/home/ebola/git/junit-reporter'},
+{ name: 'user.home', value: '/home/ebola'},
+{ name: 'user.language', value: 'en'},
+{ name: 'user.name', value: 'ebola'},
+{ name: 'user.timezone', value: 'Australia/Melbourne'},
+{ name: 'user.variant', value: ''}
 ];
 var tests = [
-{ testClass: 'com.kncept.junit.dataprovider.testfactory.ParameterisedMethodTestFactoryTest', testName: 'canCreateTests()', duration: '0', status: 'Passed'},
-{ testClass: 'com.kncept.junit.dataprovider.testfactory.ParameterisedMethodTestFactoryTest', testName: 'canExecuteTests()', duration: '0.003', status: 'Passed'},
-{ testClass: 'com.kncept.junit.dataprovider.util.ReflectionUtilTest', testName: 'canFindAnnotations()', duration: '0', status: 'Passed'}
+{ testClass: 'com.kncept.junit5.reporter.xml.TestResultsXMLReaderTest', testName: 'canFindErroredTests()', duration: '0.018', status: 'Passed'},
+{ testClass: 'com.kncept.junit5.reporter.xml.TestResultsXMLReaderTest', testName: 'canFindFailedTests()', duration: '0.008', status: 'Passed'},
+{ testClass: 'com.kncept.junit5.reporter.html.TestHTMLReportWriterTest', testName: 'canFindTemplates()', duration: '0', status: 'Passed'},
+{ testClass: 'com.kncept.junit5.reporter.xml.TestResultsXMLReaderTest', testName: 'canReadMultilineOutput()', duration: '0.015', status: 'Passed'},
+{ testClass: 'com.kncept.junit5.reporter.xml.TestResultsXMLReaderTest', testName: 'canReadProperties()', duration: '0.331', status: 'Passed'},
+{ testClass: 'com.kncept.junit5.reporter.xml.TestResultsXMLReaderTest', testName: 'canReadTestCases()', duration: '0.016', status: 'Passed'},
+{ testClass: 'com.kncept.junit5.reporter.html.TestHTMLReportWriterTest', testName: 'category()', duration: '0.003', status: 'Passed'},
+{ testClass: 'com.kncept.junit5.reporter.J5T2Test', testName: 'errAndOut()', duration: '0', status: 'Passed'},
+{ testClass: 'com.kncept.junit5.reporter.J5T2Test', testName: 'exception()', duration: '0.004', status: 'Errored'},
+{ testClass: 'com.kncept.junit5.reporter.J5T2Test', testName: 'failingTest()', duration: '0.001', status: 'Failed'},
+{ testClass: 'com.kncept.junit5.reporter.J5T2Test', testName: 'j5Stub()', duration: '0', status: 'Passed'},
+{ testClass: 'com.kncept.junit5.reporter.J5T2Test', testName: 'renamedTest()', duration: '0.003', status: 'Passed'},
+{ testClass: 'com.kncept.junit5.reporter.J5T2Test', testName: 'skippedTest()', duration: '0', status: 'Skipped'},
+{ testClass: 'com.kncept.junit5.reporter.J5T2Test', testName: 'syserr()', duration: '0.011', status: 'Passed'},
+{ testClass: 'com.kncept.junit5.reporter.J5T2Test', testName: 'sysout()', duration: '0.007', status: 'Passed'},
+{ testClass: 'com.kncept.junit5.reporter.TestHTMLReporterPluginTest', testName: 'taskIsAppliedToProject()', duration: '12.737', status: 'Passed'},
+{ testClass: 'com.kncept.junit5.reporter.html.TestHTMLReportWriterTest', testName: 'writesEnougFiles()', duration: '0.016', status: 'Passed'}
 ];
-var totals = { passed: '29', skipped: '0', failed: '0', errored: '0', available: '29', executed: '29'};
+var totals = { passed: '14', skipped: '1', failed: '1', errored: '1', available: '17', executed: '16'};
 var packageSummary = [
-{ key: 'com.kncept.junit.dataprovider.testfactory', passed: '10', skipped: '0', failed: '0', errored: '0', available: '10', executed: '10'},
-{ key: 'com.kncept.junit.dataprovider.util', passed: '4', skipped: '0', failed: '0', errored: '0', available: '4', executed: '4'},
-{ key: 'integTest.com.kncept.junit.dataprovider', passed: '15', skipped: '0', failed: '0', errored: '0', available: '15', executed: '15'}
+{ key: 'com.kncept.junit5.reporter', passed: '6', skipped: '1', failed: '1', errored: '1', available: '9', executed: '8'},
+{ key: 'com.kncept.junit5.reporter.html', passed: '3', skipped: '0', failed: '0', errored: '0', available: '3', executed: '3'},
+{ key: 'com.kncept.junit5.reporter.xml', passed: '5', skipped: '0', failed: '0', errored: '0', available: '5', executed: '5'}
 ];
 var classSummary = [
-{ key: 'com.kncept.junit.dataprovider.testfactory.ParameterisedMethodTestFactoryTest', passed: '10', skipped: '0', failed: '0', errored: '0', available: '10', executed: '10'},
-{ key: 'com.kncept.junit.dataprovider.util.ReflectionUtilTest', passed: '4', skipped: '0', failed: '0', errored: '0', available: '4', executed: '4'},
-{ key: 'integTest.com.kncept.junit.dataprovider.ExampleUseCasesTest', passed: '15', skipped: '0', failed: '0', errored: '0', available: '15', executed: '15'}
+{ key: 'com.kncept.junit5.reporter.html.TestHTMLReportWriterTest', passed: '3', skipped: '0', failed: '0', errored: '0', available: '3', executed: '3'},
+{ key: 'com.kncept.junit5.reporter.J5T2Test', passed: '5', skipped: '1', failed: '1', errored: '1', available: '8', executed: '7'},
+{ key: 'com.kncept.junit5.reporter.TestHTMLReporterPluginTest', passed: '1', skipped: '0', failed: '0', errored: '0', available: '1', executed: '1'},
+{ key: 'com.kncept.junit5.reporter.xml.TestResultsXMLReaderTest', passed: '5', skipped: '0', failed: '0', errored: '0', available: '5', executed: '5'}
 ];
