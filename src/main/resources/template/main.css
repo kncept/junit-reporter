@@ -1,23 +1,48 @@
 
 
 /** https://www.w3schools.com/cssref/css_colors.asp **/
+
 .tabPane {
-	background-color: LightGray;
+	
 }
 .tabHeaders {
 	padding-bottom: 5px;
 }
 .tabTitle {
-	padding-left: 5px;
-	padding-right: 5px;
-	border: 1px solid Green;
+	padding-left: 10px;
+	padding-right: 10px;
+	border: 1px solid;
 	
 	text-align: center;
-	background-color: Lime;
 }
 
 .selectedTabTitle {
-	background-color: LightGray;
 	border: none;
+	font-weight: bold;
+}
+
+.totalCounts {
+	display: inline-block;
+	padding-left: 100px;
+}
+
+.totalPercent {
+	display: inline-block;
+	vertical-align: top;
+	padding-left: 100px;
+}
+
+.r {
+	color: red;
+	font-weight: bold;
+}
+
+.a {
+	color: yellow;
+	font-weight: bold;
+}
+
+.g {
+	color: green;
 	font-weight: bold;
 }
