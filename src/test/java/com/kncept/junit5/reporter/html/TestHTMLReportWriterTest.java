@@ -1,7 +1,7 @@
 package com.kncept.junit5.reporter.html;
 
-import static com.kncept.junit5.reporter.domain.TestCase.Status.Passed;
-import static org.gradle.internal.impldep.com.google.common.io.Files.createTempDir;
+import static com.kncept.junit5.reporter.domain.TestCaseStatus.Passed;
+import static java.nio.file.Files.createTempDirectory;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.File;
@@ -35,13 +35,13 @@ public class TestHTMLReportWriterTest {
 	
 	@Test
 	public void writesEnoughFiles() throws IOException {
-		File htmlDir = createTempDir();
+		File htmlDir = createTempDirectory(null).toFile();
 		TestHTMLReportWriter writer = new TestHTMLReportWriter("junit-platform");
-		
+
 		writer.include(generateTestCase());
 		writer.include(generateTestCase());
 		writer.include(generateTestCase());
-		
+
 		writer.write(htmlDir);
 	}
 	

@@ -20,6 +20,8 @@ apply plugin: 'org.junit.platform.gradle.plugin'
 apply plugin: 'maven'
 apply plugin: 'signing'
 
+println GroovySystem.version
+
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
@@ -133,8 +135,41 @@ uploadArchives {
   }
 }
 
+//http://stackoverflow.com/questions/11209382/build-maven-plugins-using-gradle
+task pluginDescriptor( type: Exec ) {
+    commandLine 'mvn', '-e', '-B', 'org.apache.maven.plugins:maven-plugin-plugin:3.2:descriptor'
+    doFirst {
+        final File pom = project.file( 'pom.xml' )
+        install.repositories.mavenInstaller.pom.writeTo( pom )
+        assert pom.file, "[$pom.canonicalPath] was not created"
+
+        pom.text = pom.text.
+            replace( '<groupId>unknown</groupId>',             "<groupId>${project.group}</groupId>" ).
+            replace( '<artifactId>empty-project</artifactId>', "<artifactId>${project.name}</artifactId>" ).
+            replace( '<version>0</version>',                   """
+                                                              |<version>${version}</version>
+                                                              |  <packaging>maven-plugin</packaging>
+                                                              |  <build>
+                                                              |    <directory>\${project.basedir}/build</directory>
+                                                              |    <outputDirectory>\${project.build.directory}/classes/main</outputDirectory>
+                                                              |  </build>
+                                                              |""".stripMargin().trim())
+    }
+    doLast {
+        final  pluginDescriptor = new File(( File ) project.compileGroovy.destinationDir, 'META-INF/maven/plugin.xml' )
+        assert pluginDescriptor.file, "[$pluginDescriptor.canonicalPath] was not created"
+        println "Plugin descriptor file:$pluginDescriptor.canonicalPath is created successfully"
+    }
+}
+//project.compileGroovy.doLast{ pluginDescriptor.execute() }
+
 
 dependencies {
+    
+    //Maven plugin dependencies
+    compile 'org.apache.maven:maven-plugin-api:3.3.9'
+    compile 'org.apache.maven.plugin-tools:maven-plugin-annotations:3.5'
+    
     //JUnit5 dependencies
 	testCompile 'org.junit.jupiter:junit-jupiter-api:5.0.0-M4'
 	testRuntime 'org.junit.jupiter:junit-jupiter-engine:5.0.0-M4'

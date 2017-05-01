@@ -1,9 +1,9 @@
 package com.kncept.junit5.reporter.xml;
 
-import static com.kncept.junit5.reporter.domain.TestCase.Status.Errored;
-import static com.kncept.junit5.reporter.domain.TestCase.Status.Failed;
-import static com.kncept.junit5.reporter.domain.TestCase.Status.Passed;
-import static com.kncept.junit5.reporter.domain.TestCase.Status.Skipped;
+import static com.kncept.junit5.reporter.domain.TestCaseStatus.Errored;
+import static com.kncept.junit5.reporter.domain.TestCaseStatus.Failed;
+import static com.kncept.junit5.reporter.domain.TestCaseStatus.Passed;
+import static com.kncept.junit5.reporter.domain.TestCaseStatus.Skipped;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;

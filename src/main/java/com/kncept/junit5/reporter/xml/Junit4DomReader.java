@@ -1,5 +1,9 @@
 package com.kncept.junit5.reporter.xml;
 
+import static com.kncept.junit5.reporter.domain.TestCaseStatus.Errored;
+import static com.kncept.junit5.reporter.domain.TestCaseStatus.Failed;
+import static com.kncept.junit5.reporter.domain.TestCaseStatus.Passed;
+import static com.kncept.junit5.reporter.domain.TestCaseStatus.Skipped;
 import static java.lang.System.lineSeparator;
 import static java.util.Arrays.asList;
 
@@ -21,7 +25,7 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 import com.kncept.junit5.reporter.domain.TestCase;
-import com.kncept.junit5.reporter.domain.TestCase.Status;
+import com.kncept.junit5.reporter.domain.TestCaseStatus;
 
 public class Junit4DomReader implements XMLTestResults {
 	
@@ -50,24 +54,24 @@ public class Junit4DomReader implements XMLTestResults {
 		for(int i = 0; i < nl.getLength(); i++) {
 			Node node = nl.item(i);
 			
-			Status status = Status.Passed; //default output is success.
+			TestCaseStatus status = Passed; //default output is success.
 			
 			Node skippedNode = child(node, "skipped");
 //			<skipped><![CDATA[public void com.kncept.junit5.reporter.J5T2Test.skippedTest() is @Disabled]]></skipped>
 			if (skippedNode != null) {
-				status = Status.Skipped;
+				status = Skipped;
 			}
 			
 			Node failureNode = child(node, "failure");
 //			<failure message="Failure Message passed into Assertions.fail" type="org.opentest4j.AssertionFailedError"><![CDATA[org.opentest4j.AssertionFailedError: Failure Message passed into Assertions.fail
 			if (failureNode != null) {
-				status = Status.Failed;
+				status = Failed;
 			}
 			
 			Node errorNode = child(node, "error");
 //			<error message="RuntimeException message" type="java.lang.RuntimeException"><![CDATA[java.lang.RuntimeException: RuntimeException message
 			if (errorNode != null) {
-				status = Status.Errored;
+				status = Errored;
 			}
 			
 			TestCase testCase = new TestCase(

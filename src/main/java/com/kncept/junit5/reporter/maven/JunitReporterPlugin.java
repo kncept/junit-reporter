@@ -5,12 +5,13 @@ import java.io.File;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
+import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 
 
 
-@Mojo(name="junit5HTMLReport")
+@Mojo(name="junit5HTMLReport", defaultPhase=LifecyclePhase.POST_INTEGRATION_TEST)
 public class JunitReporterPlugin extends AbstractMojo {
 
     @Parameter( defaultValue = "${project.build.outputDirectory}", readonly = true, required = true )

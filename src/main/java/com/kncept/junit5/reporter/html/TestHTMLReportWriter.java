@@ -19,7 +19,7 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import com.kncept.junit5.reporter.domain.TestCase;
-import com.kncept.junit5.reporter.domain.TestCase.Status;
+import com.kncept.junit5.reporter.domain.TestCaseStatus;
 import com.kncept.junit5.reporter.xml.XMLTestResults;
 
 public class TestHTMLReportWriter {
@@ -186,7 +186,7 @@ public class TestHTMLReportWriter {
 		public SummaryBucket(String key) {
 			this.key = key;
 		}
-		public void include(Status status) {
+		public void include(TestCaseStatus status) {
 			switch(status) {
 			case Passed:
 				passed++;
