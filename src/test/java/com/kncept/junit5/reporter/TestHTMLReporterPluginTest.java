@@ -8,6 +8,8 @@ import org.gradle.api.Task;
 import org.gradle.api.plugins.JavaPlugin;
 import org.junit.jupiter.api.Test;
 
+import com.kncept.junit5.reporter.gradle.TestHTMLReporterPlugin;
+
 public class TestHTMLReporterPluginTest {
 
 	@Test

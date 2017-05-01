@@ -15,6 +15,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.w3c.dom.Document;
+import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
@@ -22,19 +23,27 @@ import org.xml.sax.SAXException;
 import com.kncept.junit5.reporter.domain.TestCase;
 import com.kncept.junit5.reporter.domain.TestCase.Status;
 
-public class Junit4DomReader implements XMLTestResults{
+public class Junit4DomReader implements XMLTestResults {
 	
-	private LinkedHashMap<String, String> properties = new LinkedHashMap<>();
+	private LinkedHashMap<String, String> systemProperties = new LinkedHashMap<>();
+	private LinkedHashMap<String, String> testsuiteProperties = new LinkedHashMap<>();
 	private List<TestCase> testcases = new ArrayList<>();
 	
 	public Junit4DomReader(InputStream in) throws ParserConfigurationException, SAXException, IOException {
 		DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
 		Document doc = builder.parse(in);
 		
+		NamedNodeMap testsuiteAttrs = doc.getDocumentElement().getAttributes();
+		if (testsuiteAttrs != null) for(int i = 0; i < testsuiteAttrs.getLength(); i++) {
+			Node attr = testsuiteAttrs.item(i);
+			testsuiteProperties.put(attr.getNodeName(), attr.getNodeValue());
+		}
+		
+		
 		NodeList nl = doc.getElementsByTagName("property");
 		for(int i = 0; i < nl.getLength(); i++) {
 			Node node = nl.item(i);
-			properties.put(attr(node, "name"), attr(node, "value"));
+			systemProperties.put(attr(node, "name"), attr(node, "value"));
 		}
 		
 		nl = doc.getElementsByTagName("testcase");
@@ -100,8 +109,12 @@ public class Junit4DomReader implements XMLTestResults{
 		return lines;
 	}
 	
-	public LinkedHashMap<String, String> properties() {
-		return properties;
+	public LinkedHashMap<String, String> systemProperties() {
+		return systemProperties;
+	}
+	
+	public LinkedHashMap<String, String> testsuiteProperties() {
+		return testsuiteProperties;
 	}
 	
 	public List<TestCase> testcases() {

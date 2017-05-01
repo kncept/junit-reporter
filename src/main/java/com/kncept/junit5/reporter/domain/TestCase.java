@@ -35,7 +35,9 @@ public class TestCase {
 	}
 	
 	public String getPackagename() {
-		return classname.substring(0, classname.lastIndexOf("."));
+		if (classname.contains("."))
+			return classname.substring(0, classname.lastIndexOf("."));
+		return ""; //no package!!
 	}
 	
 	public BigDecimal getDuration() {

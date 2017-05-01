@@ -13,7 +13,7 @@ Add or merge this to the top of your buildscript libraries via the mavenCentral 
             mavenCentral()
         }
         dependencies {
-            classpath 'com.kncept.junit5.reporter:junit-reporter:0.9.1-M3'
+            classpath 'com.kncept.junit5.reporter:junit-reporter:0.9.2-M4'
         }
     }
 

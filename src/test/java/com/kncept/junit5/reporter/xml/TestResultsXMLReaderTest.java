@@ -21,10 +21,10 @@ public class TestResultsXMLReaderTest {
 	@Test
 	public void canReadProperties() throws Exception {
 		XMLTestResults testResults = testResults();
-		assertNotNull(testResults.properties());
-		assertFalse(testResults.properties().isEmpty());
-		for(String key: testResults.properties().keySet()) {
-			assertNotNull(testResults.properties().get(key));
+		assertNotNull(testResults.systemProperties());
+		assertFalse(testResults.systemProperties().isEmpty());
+		for(String key: testResults.systemProperties().keySet()) {
+			assertNotNull(testResults.systemProperties().get(key));
 		}
 	}
 	

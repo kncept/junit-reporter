@@ -7,9 +7,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintStream;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -25,7 +27,8 @@ public class TestHTMLReportWriter {
 	
 	//Going to assume that the system properties DO NOT CHANEG between tests.
 	//TODO: Work out how to make this more flexible
-	public LinkedHashMap<String, String> properties = new LinkedHashMap<>();
+	public LinkedHashMap<String, String> systemProperties = new LinkedHashMap<>();
+	public LinkedHashMap<String, String> testsuiteProperties = new LinkedHashMap<>();
 	public List<TestCase> testcases = new ArrayList<>();
 	
 	public TestHTMLReportWriter(String category) {
@@ -39,7 +42,8 @@ public class TestHTMLReportWriter {
 	//optional settings... colours, etc.
 	
 	public void include(XMLTestResults xml) {
-		properties.putAll(xml.properties());
+		systemProperties.putAll(xml.systemProperties());
+		testsuiteProperties.putAll(xml.testsuiteProperties());
 		testcases.addAll(xml.testcases());
 	}
 	
@@ -67,23 +71,24 @@ public class TestHTMLReportWriter {
 				PrintStream out = new PrintStream(new FileOutputStream(new File(htmlDir, "data.js")));
 		) {
 
-			//TODO: add a javascript delimiter...
-			Iterator<Map.Entry<String, String>> sysprops = properties.entrySet().iterator();
-			out.println("var sysprops = [");
-			while(sysprops.hasNext()) {
-				Map.Entry<String, String> next = sysprops.next();
-				out.print(toJsMap(
-						toJsMapValue("name", next.getKey()),
-						toJsMapValue("value", next.getValue())
-				));
-				if(sysprops.hasNext()) {
-					out.println(",");
-				} else {
-					out.println();
-				}
+			if (!testsuiteProperties.containsKey("timestamp")) {
+				testsuiteProperties.put("timestamp", new SimpleDateFormat("yyyy-MM-ddTHH:mm:ss").format(new Date()));
 			}
-			out.println("];");
+			if (!testsuiteProperties.containsKey("time")) {
+				testsuiteProperties.put("time", "unknown");
+			}
 			
+			
+			
+			out.println("var testSuiteProps = ");
+			out.println(toJsNvpArray(testsuiteProperties));
+			out.println(";");
+			
+			
+			out.println("var sysprops = ");
+			out.println(toJsNvpArray(systemProperties));
+			out.println(";");
+
 			SummaryBucket totals = new SummaryBucket("");
 			Map<String, SummaryBucket> byPackage = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
 			Map<String, SummaryBucket> byClass = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
@@ -112,14 +117,16 @@ public class TestHTMLReportWriter {
 			}
 			out.println("];");
 			
-			out.print("var totals = ");
+			out.print("var summary = ");
 			out.print(toJsMap(
 					toJsMapValue("passed", Integer.toString(totals.passed)),
 					toJsMapValue("skipped", Integer.toString(totals.skipped)),
 					toJsMapValue("failed", Integer.toString(totals.failed)),
 					toJsMapValue("errored", Integer.toString(totals.errored)),
 					toJsMapValue("available", Integer.toString(totals.passed + totals.skipped + totals.failed + totals.errored)),
-					toJsMapValue("executed", Integer.toString(totals.passed + totals.failed + totals.errored))
+					toJsMapValue("executed", Integer.toString(totals.passed + totals.failed + totals.errored)),
+					toJsMapValue("timestamp", testsuiteProperties.get("timestamp")),
+					toJsMapValue("duration", testsuiteProperties.get("time"))
 					));
 			out.println(";");
 			
@@ -218,7 +225,27 @@ public class TestHTMLReportWriter {
 		return sb.toString();
 	}
 	private String toJsMapValue(String key, String value) {
-		return key + ": '" + value + "'";
+		return "" + key + ": \"" + value + "\"";
+	}
+	//because of how JsonTable works, turn the map into a NVP array
+	private String toJsNvpArray(Map<String, String> stringMap) {
+		StringBuilder sb = new StringBuilder();
+		sb.append("[ ");
+		
+		Iterator<Map.Entry<String, String>> values = stringMap.entrySet().iterator();
+		while(values.hasNext()) {
+			Map.Entry<String, String> next = values.next();
+			sb.append(toJsMap(
+					toJsMapValue("name", next.getKey()),
+					toJsMapValue("value", next.getValue())
+			));
+			if(values.hasNext()) {
+				sb.append(",\n");
+			} else {
+				sb.append(" ]");
+			}
+		}
+		return sb.toString();
 	}
 	
 	public void writeStaticData(File htmlDir) throws IOException {

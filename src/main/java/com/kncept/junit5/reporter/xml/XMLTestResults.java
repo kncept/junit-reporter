@@ -7,7 +7,9 @@ import com.kncept.junit5.reporter.domain.TestCase;
 
 public interface XMLTestResults {
 
-	public LinkedHashMap<String, String> properties();
+	public LinkedHashMap<String, String> systemProperties();
+	
+	public LinkedHashMap<String, String> testsuiteProperties();
 	
 	public List<TestCase> testcases();
 	

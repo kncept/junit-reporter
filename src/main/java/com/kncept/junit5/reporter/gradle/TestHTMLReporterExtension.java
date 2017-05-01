@@ -1,4 +1,4 @@
-package com.kncept.junit5.reporter;
+package com.kncept.junit5.reporter.gradle;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -9,6 +9,10 @@
 .settings
 .project
 
+#IntelliJ
+.idea
+target
+
 #maven deployment stuff
 gradle.properties
 secring.gpg

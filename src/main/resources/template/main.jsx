@@ -82,23 +82,26 @@ var Tabs = React.createClass({
 
 ReactDOM.render(
     <Tabs   
-        titles={['Summary', 'Packages', 'Classs', 'Tests', 'System Properties']}
+        titles={['Summary', 'Packages', 'Classs', 'Tests', 'TestSuite Properties', 'System Properties']}
     >
         <div className="totals">
-            <span className="totalCounts">
+            <span className="mainSummary">
                 <table>
-                <tr><td>passed:</td><td className={totals.passed == totals.executed ? "g" : "r"}>{totals.passed}</td></tr>
-                <tr><td>skipped:</td><td className={totals.skipped == 0 ? "" : "a"}>{totals.skipped}</td></tr>
-                <tr><td>failed:</td><td className={totals.failed == 0 ? "" : "r"}>{totals.failed}</td></tr>
-                <tr><td>errored:</td><td className={totals.errored == 0 ? "" : "r"}>{totals.errored}</td></tr>
+                    <tr><td>timestamp:</td><td>{summary.timestamp}</td></tr>
+                    <tr><td>duration:</td><td>{summary.duration}</td></tr>
+                    <tr><td>passed:</td><td className={summary.passed == summary.executed ? "g" : "r"}>{summary.passed}</td></tr>
+                    <tr><td>skipped:</td><td className={summary.skipped == 0 ? "" : "a"}>{summary.skipped}</td></tr>
+                    <tr><td>failed:</td><td className={summary.failed == 0 ? "" : "r"}>{summary.failed}</td></tr>
+                    <tr><td>errored:</td><td className={summary.errored == 0 ? "" : "r"}>{summary.errored}</td></tr>
                 </table>
             </span><span className="totalPercent">
-                <div>Success Rate: <span className={totals.passed == totals.executed ? "g" : "r"}>{100 * Number(totals.passed) / Number(totals.executed)}%</span></div>
+                <div>Success Rate: <span className={summary.passed == summary.executed ? "g" : "r"}>{100 * Number(summary.passed) / Number(summary.executed)}%</span></div>
             </span>
         </div>
         <JsonTable rows={packageSummary} columns={packageSummaryHeaders} />
         <JsonTable rows={classSummary} columns={classSummaryHeaders} />
         <JsonTable rows={tests} columns={testHeaders} />
+        <JsonTable rows={testSuiteProps} columns={propertiesHeaders} />
         <JsonTable rows={sysprops} columns={propertiesHeaders} />
     </Tabs>, 
         document.getElementById('results'));

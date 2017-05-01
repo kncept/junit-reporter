@@ -1,4 +1,4 @@
-package com.kncept.junit5.reporter;
+package com.kncept.junit5.reporter.gradle;
 
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;

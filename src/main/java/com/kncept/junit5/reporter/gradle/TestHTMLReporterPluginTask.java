@@ -1,4 +1,4 @@
-package com.kncept.junit5.reporter;
+package com.kncept.junit5.reporter.gradle;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -36,15 +36,16 @@ public class TestHTMLReporterPluginTask extends DefaultTask {
 			// 1 file per class
 			//reports/tests/test
 		
-		if (settings == null)
-			System.out.println("settings is null");
-		else {
-			System.out.println("settings.size = " + settings.getReportDirectories().size());
+		if (settings == null) {
+		} else {
+			
+			
 			for (int i = 0; i < settings.getReportDirectories().size(); i++) {
 				Object val = settings.getReportDirectories().get(i);
 				System.out.println(i + ": " + val.getClass().getName() + " " + val);
 			}
 		}
+		
 		
 		File testResultsDir = new File(buildDir, "test-results");
 		File testReportsDir = new File(buildDir, "reports/tests");
