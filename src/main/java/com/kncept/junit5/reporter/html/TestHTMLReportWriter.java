@@ -72,7 +72,7 @@ public class TestHTMLReportWriter {
 		) {
 
 			if (!testsuiteProperties.containsKey("timestamp")) {
-				testsuiteProperties.put("timestamp", new SimpleDateFormat("yyyy-MM-ddTHH:mm:ss").format(new Date()));
+				testsuiteProperties.put("timestamp", new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss").format(new Date()));
 			}
 			if (!testsuiteProperties.containsKey("time")) {
 				testsuiteProperties.put("time", "unknown");
@@ -225,6 +225,8 @@ public class TestHTMLReportWriter {
 		return sb.toString();
 	}
 	private String toJsMapValue(String key, String value) {
+		value = value.replaceAll("\n", "\\n");
+		value = value.replaceAll("\"", "\\\"");
 		return "" + key + ": \"" + value + "\"";
 	}
 	//because of how JsonTable works, turn the map into a NVP array
@@ -264,8 +266,11 @@ public class TestHTMLReportWriter {
 		
 		
 		for(String fileName: files) {
+			File outputFile = new File(htmlDir, fileName);
+			if (outputFile.exists())
+				outputFile.delete();
 			try (
-					OutputStream out = new FileOutputStream(new File(htmlDir, fileName));
+					OutputStream out = new FileOutputStream(outputFile);
 					InputStream in = getTemplate(fileName);
 			) {
 				copy(in, out);

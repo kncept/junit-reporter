@@ -42,3 +42,7 @@
 	color: green;
 	font-weight: bold;
 }
+
+tr.jsonRow:hover {
+	background-color: #EAEAEA;
+}
