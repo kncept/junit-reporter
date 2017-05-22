@@ -30,19 +30,6 @@
 	padding-left: 100px;
 }
 
-.r {
-	color: red;
-	font-weight: bold;
-}
-.a {
-	color: orange;
-	font-weight: bold;
-}
-.g {
-	color: green;
-	font-weight: bold;
-}
-
 tr.jsonRow:hover {
 	background-color: #EAEAEA;
 }

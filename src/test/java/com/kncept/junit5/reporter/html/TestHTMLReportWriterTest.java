@@ -13,6 +13,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import com.kncept.junit5.reporter.domain.TestCase;
+import com.kncept.junit5.reporter.gradle.TestHTMLReporterSettings;
 
 public class TestHTMLReportWriterTest {
 	private int counter = 0;
@@ -42,7 +43,7 @@ public class TestHTMLReportWriterTest {
 		writer.include(generateTestCase());
 		writer.include(generateTestCase());
 
-		writer.write(htmlDir);
+		writer.write(htmlDir, new TestHTMLReporterSettings());
 	}
 	
 	private TestCase generateTestCase() {

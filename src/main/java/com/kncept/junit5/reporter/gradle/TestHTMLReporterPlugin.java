@@ -9,8 +9,8 @@ public class TestHTMLReporterPlugin implements Plugin<Project> {
 	@Override
 	public void apply(Project project) {
 		
-		project.getExtensions().create("junit5HTMLReportSettings", TestHTMLReporterExtension.class);
-		TestHTMLReporterPluginTask junit5HTMLReport = project.getTasks().create("junit5HTMLReport", TestHTMLReporterPluginTask.class);
+		project.getExtensions().create(TestHTMLReporterSettings.settingsExtensionName, TestHTMLReporterSettings.class);
+		TestHTMLReporterPluginTask junit5HTMLReport = project.getTasks().create("junitHtmlReport", TestHTMLReporterPluginTask.class);
 
 		//can throw UnknownTaskException
 		Task test = project.getTasks().getByName("check");

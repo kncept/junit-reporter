@@ -13,7 +13,7 @@ Add or merge this to the top of your buildscript libraries via the mavenCentral 
             mavenCentral()
         }
         dependencies {
-            classpath 'com.kncept.junit5.reporter:junit-reporter:0.9.2-M4'
+            classpath 'com.kncept.junit5.reporter:junit-reporter:1.0.0
         }
     }
 
@@ -21,4 +21,20 @@ Then, apply the plugin:
 
     apply plugin: 'com.kncept.junit5.reporter'
 
-This will bind the task 'junit5HTMLReport' to run after the 'check' task.
+This will bind the task 'junitHtmlReport' to run after the 'check' task.
+
+If you need to do any customisation (aggregation, or you just don't like red...), Its possible to customise.
+Use the following config block (shown with default values):
+
+	junitHtmlReport {
+		// If true, then instead of producing multiple reports per test folder (test run), 
+		// aggregate them all together into the test-reports root directory.
+		//
+		// Also use this if all your test results end up directly in the test-results directory
+		aggregated = false
+		
+		//RAG status css overrides
+		cssRed = 'red'
+		cssAmber = 'orange'
+		cssGreen = 'green'
+	}

@@ -20,6 +20,7 @@ import java.util.TreeMap;
 
 import com.kncept.junit5.reporter.domain.TestCase;
 import com.kncept.junit5.reporter.domain.TestCaseStatus;
+import com.kncept.junit5.reporter.gradle.TestHTMLReporterSettings;
 import com.kncept.junit5.reporter.xml.XMLTestResults;
 
 public class TestHTMLReportWriter {
@@ -51,23 +52,31 @@ public class TestHTMLReportWriter {
 		testcases.add(testcase);
 	}
 	
-	public void write(File outputDir) throws IOException {
+	public void write(File outputDir, TestHTMLReporterSettings settings) throws IOException {
 		if (testcases.isEmpty())
 			return;
 		
 		//sort by test name
 		Collections.sort(testcases, (t1, t2) -> {return String.CASE_INSENSITIVE_ORDER.compare(t1.getName(), t2.getName());});
 		
-		File htmlDir = new File(outputDir, category);
-		htmlDir.mkdirs();
+		File htmlDir = outputDir;
+		if (category != null) {
+			htmlDir = new File(outputDir, category);
+			htmlDir.mkdirs();	
+		}
 		
-		writeDynamicData(htmlDir);
+		writeDynamicData(htmlDir, settings);
 		writeStaticData(htmlDir);
 		
 	}
 	
-	public void writeDynamicData(File htmlDir) throws IOException {
-		try (
+	public void writeDynamicData(File htmlDir, TestHTMLReporterSettings settings) throws IOException {
+		writeDataJs(htmlDir);
+		writeRagCss(htmlDir, settings);
+	}
+	
+	private void writeDataJs(File htmlDir) throws IOException {
+		try (		
 				PrintStream out = new PrintStream(new FileOutputStream(new File(htmlDir, "data.js")));
 		) {
 
@@ -177,6 +186,28 @@ public class TestHTMLReportWriter {
 		
 	}
 	
+	private void writeRagCss(File htmlDir, TestHTMLReporterSettings settings) throws IOException {
+		try (		
+				PrintStream out = new PrintStream(new FileOutputStream(new File(htmlDir, "rag.css")));
+		) {
+			out.println("/*RAG status indicators*/");
+			outputCss(out, "r", settings.getCssRed());
+			outputCss(out, "a", settings.getCssAmber());
+			outputCss(out, "g", settings.getCssGreen());
+		}
+	}
+	
+	private void outputCss(PrintStream out, String cssClass, String colour) throws IOException {
+		out.print(".");
+		out.print(cssClass);
+		out.println(" {");
+		out.print("\tcolor: ");
+		out.print(colour);
+		out.println(";");
+		out.println("\tfont-weight: bold;");
+		out.println("}");
+	}
+	
 	static class SummaryBucket {
 		public final String key;
 		public int passed;
@@ -243,10 +274,9 @@ public class TestHTMLReportWriter {
 			));
 			if(values.hasNext()) {
 				sb.append(",\n");
-			} else {
-				sb.append(" ]");
 			}
 		}
+		sb.append(" ]");
 		return sb.toString();
 	}
 	

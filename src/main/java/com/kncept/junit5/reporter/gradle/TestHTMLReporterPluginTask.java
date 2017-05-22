@@ -26,8 +26,9 @@ public class TestHTMLReporterPluginTask extends DefaultTask {
 	@TaskAction
 	public void generateJunitReport() throws IOException {
 		//stub
-		TestHTMLReporterExtension settings = (TestHTMLReporterExtension)getProject().getExtensions().getByName("junit5HTMLReportSettings");
-		
+		TestHTMLReporterSettings settings = (TestHTMLReporterSettings)getProject().getExtensions().getByName(TestHTMLReporterSettings.settingsExtensionName);
+		if (settings == null)
+			settings = new TestHTMLReporterSettings(); //use defaults
 		File buildDir = getProject().getBuildDir();
 		
 		//junit 5: test-results/junit-platform
@@ -35,35 +36,48 @@ public class TestHTMLReporterPluginTask extends DefaultTask {
 		//junit 4: test-results/test
 			// 1 file per class
 			//reports/tests/test
-		
-		if (settings == null) {
-		} else {
-			
-			
-			for (int i = 0; i < settings.getReportDirectories().size(); i++) {
-				Object val = settings.getReportDirectories().get(i);
-				System.out.println(i + ": " + val.getClass().getName() + " " + val);
-			}
-		}
-		
+
 		
 		File testResultsDir = new File(buildDir, "test-results");
 		File testReportsDir = new File(buildDir, "reports/tests");
 		
+		TestHTMLReportWriter reporter =null;
+		
 		for(File file: testResultsDir.listFiles()) {
-			TestHTMLReportWriter reporter = new TestHTMLReportWriter(file.getName());
-			for(File testFile: file.listFiles()) {
-				if (
-						testFile.isFile() && 
-						testFile.getName().startsWith("TEST-") && 
-						testFile.getName().endsWith(".xml")) {
-					XMLTestResults restResults = readFile(testFile);
+			if (!file.isDirectory() && !settings.isAggregated())
+				continue;
+			if (!settings.isAggregated())
+				reporter = null;
+			
+			
+				if (file.isDirectory()) {
+					for(File testFile: file.listFiles()) {
+						if (isXmlTestFile(testFile)) {
+							XMLTestResults restResults = readFile(testFile);
+							if (reporter == null)
+								reporter = new TestHTMLReportWriter(settings.isAggregated() ? null : file.getName());
+							reporter.include(restResults);
+						}
+					}
+					if (reporter != null && !settings.isAggregated())
+						reporter.write(testReportsDir, settings);
+				} else if (isXmlTestFile(file) && settings.isAggregated()) {
+					XMLTestResults restResults = readFile(file);
+					if (reporter == null)
+						reporter = new TestHTMLReportWriter(settings.isAggregated() ? null : file.getName());
 					reporter.include(restResults);
 				}
-			}
-			reporter.write(testReportsDir);
 		}
+		if (reporter != null && settings.isAggregated())
+			reporter.write(testReportsDir, settings);
 	}
+	
+	public static boolean isXmlTestFile(File file) {
+		return file.isFile() && 
+				file.getName().startsWith("TEST-") && 
+				file.getName().endsWith(".xml");
+	}
+	
 	
 	private XMLTestResults readFile(File file) throws IOException {
 		try (InputStream in = new FileInputStream(file)) {
