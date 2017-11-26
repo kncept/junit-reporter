@@ -38,8 +38,8 @@ public class TestHTMLReporterPluginTask extends DefaultTask {
 			//reports/tests/test
 
 		
-		File testResultsDir = new File(buildDir, "test-results");
-		File testReportsDir = new File(buildDir, "reports/tests");
+		File testResultsDir = new File(buildDir, settings.getTestResultsDir());
+		File testReportsDir = new File(buildDir, settings.getTestReportsDir());
 		
 		TestHTMLReportWriter reporter =null;
 		
@@ -48,7 +48,6 @@ public class TestHTMLReporterPluginTask extends DefaultTask {
 				continue;
 			if (!settings.isAggregated())
 				reporter = null;
-			
 			
 				if (file.isDirectory()) {
 					for(File testFile: file.listFiles()) {
@@ -70,6 +69,12 @@ public class TestHTMLReporterPluginTask extends DefaultTask {
 		}
 		if (reporter != null && settings.isAggregated())
 			reporter.write(testReportsDir, settings);
+		
+		if (settings.isAggregated()) {
+			System.out.println("Reports written to " + testReportsDir.getAbsolutePath() + File.separator + "index.html");
+		} else {
+			System.out.println("Reports written to " + testReportsDir.getAbsolutePath() + File.separator + "junit-platform" + File.separator + "index.html");
+		}
 	}
 	
 	public static boolean isXmlTestFile(File file) {

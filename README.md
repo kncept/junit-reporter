@@ -1,10 +1,5 @@
 # junit-reporter [![Build Status](https://travis-ci.org/kncept/junit-reporter.svg?branch=master)](https://travis-ci.org/kncept/junit-reporter)
 
-JUnit 5 currently has very limited build integration.
-This plugin is a way to remedy that.
-It produces a simple html5/javascript report.
-
-
 Gradle Instructions:
 Add or merge this to the top of your buildscript libraries via the mavenCentral repository:
 
@@ -13,7 +8,7 @@ Add or merge this to the top of your buildscript libraries via the mavenCentral 
             mavenCentral()
         }
         dependencies {
-            classpath 'com.kncept.junit5.reporter:junit-reporter:1.0.0
+            classpath 'com.kncept.junit5.reporter:junit-reporter:1.0.0'
         }
     }
 
@@ -21,7 +16,11 @@ Then, apply the plugin:
 
     apply plugin: 'com.kncept.junit5.reporter'
 
-This will bind the task 'junitHtmlReport' to run after the 'check' task.
+This will bind the task 'junitHtmlReport' to run as a finalizer after the 'test' or 'check' task.
+If you want more fine grained control, add it as a finalizer to another task. eg:
+
+    junitPlatformTest.finalizedBy 'junitHtmlReport'
+    
 
 If you need to do any customisation (aggregation, or you just don't like red...), Its possible to customise.
 Use the following config block (shown with default values):
@@ -37,4 +36,9 @@ Use the following config block (shown with default values):
 		cssRed = 'red'
 		cssAmber = 'orange'
 		cssGreen = 'green'
+		
+		//Processing directories
+		testResultsDir = 'test-results'
+		testReportsDir = 'reports/tests'
+		
 	}

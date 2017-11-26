@@ -1,9 +1,13 @@
 buildscript {
     repositories {
+        mavenLocal()
         mavenCentral()
     }
     dependencies {
-        classpath 'org.junit.platform:junit-platform-gradle-plugin:1.0.0-M4'
+    	//previously released version of junit-reporter
+    	classpath 'com.kncept.junit5.reporter:junit-reporter:1.0.0'
+    
+        classpath 'org.junit.platform:junit-platform-gradle-plugin:1.0.2'
     }
 }
 
@@ -16,19 +20,18 @@ apply plugin: 'eclipse'
 apply plugin: 'idea'
  
 apply plugin: 'org.junit.platform.gradle.plugin'
+apply plugin: 'com.kncept.junit5.reporter'
 
 apply plugin: 'maven'
 apply plugin: 'signing'
-
-println GroovySystem.version
-
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
 group = 'com.kncept.junit5.reporter'
-version = '1.0.0'
+version = '1.0.1'
 
+junitPlatformTest.finalizedBy 'junitHtmlReport'
 
 task javadocJar(type: Jar) {
     classifier = 'javadoc'
@@ -72,7 +75,7 @@ signArchives.onlyIf {new File('gradle.properties').exists()}
 
 task wrapper(type: Wrapper) {
 	description = 'gradlew'
-	gradleVersion = '3.5'
+	gradleVersion = '4.3.1'
 }
 
 repositories {
@@ -171,6 +174,6 @@ dependencies {
     compile 'org.apache.maven.plugin-tools:maven-plugin-annotations:3.5'
     
     //JUnit5 dependencies
-	testCompile 'org.junit.jupiter:junit-jupiter-api:5.0.0-M4'
-	testRuntime 'org.junit.jupiter:junit-jupiter-engine:5.0.0-M4'
+	testCompile 'org.junit.jupiter:junit-jupiter-api:5.0.2'
+	testRuntime 'org.junit.jupiter:junit-jupiter-engine:5.0.2'
 }

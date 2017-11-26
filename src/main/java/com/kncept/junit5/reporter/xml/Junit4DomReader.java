@@ -7,8 +7,10 @@ import static com.kncept.junit5.reporter.domain.TestCaseStatus.Skipped;
 import static java.lang.System.lineSeparator;
 import static java.util.Arrays.asList;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.StringReader;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -105,9 +107,19 @@ public class Junit4DomReader implements XMLTestResults {
 		List<String> lines = new ArrayList<>();
 		if (node != null) {
 			NodeList nl = node.getChildNodes();
-			for(int i = 0; i < nl.getLength(); i++) {
+			for(int i = 0; i < nl.getLength(); i++) try {
 				Node child = nl.item(i);
-				lines.addAll(asList(child.getTextContent().split(lineSeparator())));
+				
+				//switch to BufferedReader rather than string split to handle unix/windows cross platform rendering
+				BufferedReader bIn = new BufferedReader(new StringReader(child.getTextContent()));
+				String line = bIn.readLine();
+				while (line != null) {
+					lines.add(line);
+					line = bIn.readLine();
+				}
+				
+			} catch (IOException e) {
+				throw new RuntimeException(e);
 			}
 		}
 		return lines;
