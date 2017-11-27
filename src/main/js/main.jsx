@@ -1,4 +1,7 @@
+const React = require('react');
+const ReactDOM = require('react-dom');
 
+const JsonTable = require('react-json-table');
 
 // page skeleton
 ReactDOM.render(

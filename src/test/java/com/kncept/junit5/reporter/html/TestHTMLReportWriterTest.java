@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigDecimal;
 
+import org.gradle.api.tasks.testing.TestReport;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -44,6 +45,15 @@ public class TestHTMLReportWriterTest {
 		writer.include(generateTestCase());
 
 		writer.write(htmlDir, new TestHTMLReporterSettings());
+	}
+	
+	@Test
+	public void canDelimitStringCorrectly() {
+		TestHTMLReportWriter writer = new TestHTMLReportWriter("");
+		assertEquals("\\\\", writer.addDelimiters("\\"));
+		assertEquals("\\\"", writer.addDelimiters("\""));
+		assertEquals("\\n", writer.addDelimiters("\n"));
+		assertEquals("\\t", writer.addDelimiters("\t"));
 	}
 	
 	private TestCase generateTestCase() {

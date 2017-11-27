@@ -8,7 +8,7 @@ Add or merge this to the top of your buildscript libraries via the mavenCentral 
             mavenCentral()
         }
         dependencies {
-            classpath 'com.kncept.junit5.reporter:junit-reporter:1.0.0'
+            classpath 'com.kncept.junit5.reporter:junit-reporter:1.0.1'
         }
     }
 

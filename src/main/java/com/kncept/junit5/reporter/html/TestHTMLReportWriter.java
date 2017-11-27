@@ -255,10 +255,18 @@ public class TestHTMLReportWriter {
 		sb.append("}");
 		return sb.toString();
 	}
+	public String addDelimiters(String value) {
+		value = value.replaceAll("\\\\", "\\\\\\\\"); //delimiter... always *start* with this
+		value = value.replaceAll("\n", "\\\\n"); //newline character
+		value = value.replaceAll("\r", "\\\\r"); //carriage return character
+		value = value.replaceAll("\t", "\\\\t"); //tab character
+		value = value.replaceAll("\b", "\\\\b"); //backspace character
+		value = value.replaceAll("\f", "\\\\f"); //form feed character
+		value = value.replaceAll("\"", "\\\\\"");
+		return value;
+	}
 	private String toJsMapValue(String key, String value) {
-		value = value.replaceAll("\n", "\\n");
-		value = value.replaceAll("\"", "\\\"");
-		return "" + key + ": \"" + value + "\"";
+		return "" + key + ": \"" + addDelimiters(value) + "\"";
 	}
 	//because of how JsonTable works, turn the map into a NVP array
 	private String toJsNvpArray(Map<String, String> stringMap) {
@@ -284,14 +292,7 @@ public class TestHTMLReportWriter {
 		List<String> files = Arrays.asList(
 				"index.html",
 				"main.css",
-				"main.jsx",
-				
-				"react.15.4.2.js",
-				"react-dom.15.4.2.js",
-				
-				"babel-5.8.34.js",
-				
-				"react-json-table.min.js"
+				"site.js"
 				);
 		
 		

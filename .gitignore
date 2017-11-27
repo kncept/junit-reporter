@@ -1,4 +1,7 @@
 
+#project specific
+src/generated/
+
 # gradle
 /.gradle/
 /build/
@@ -16,3 +19,6 @@ target
 #maven deployment stuff
 gradle.properties
 secring.gpg
+
+#NPM and NodeJS stuff
+node_modules

@@ -2,12 +2,17 @@ buildscript {
     repositories {
         mavenLocal()
         mavenCentral()
+        maven { url "https://plugins.gradle.org/m2/" } 
     }
     dependencies {
     	//previously released version of junit-reporter
     	classpath 'com.kncept.junit5.reporter:junit-reporter:1.0.0'
     
+    	//Junit 5 plugin
         classpath 'org.junit.platform:junit-platform-gradle-plugin:1.0.2'
+        
+        // https://github.com/srs/gradle-node-plugin/blob/master/docs/node.md
+		classpath 'com.moowork.gradle:gradle-node-plugin:1.2.0'
     }
 }
 
@@ -21,6 +26,7 @@ apply plugin: 'idea'
  
 apply plugin: 'org.junit.platform.gradle.plugin'
 apply plugin: 'com.kncept.junit5.reporter'
+apply plugin: 'com.moowork.node'
 
 apply plugin: 'maven'
 apply plugin: 'signing'
@@ -168,7 +174,6 @@ task pluginDescriptor( type: Exec ) {
 
 
 dependencies {
-    
     //Maven plugin dependencies
     compile 'org.apache.maven:maven-plugin-api:3.3.9'
     compile 'org.apache.maven.plugin-tools:maven-plugin-annotations:3.5'
@@ -177,3 +182,56 @@ dependencies {
 	testCompile 'org.junit.jupiter:junit-jupiter-api:5.0.2'
 	testRuntime 'org.junit.jupiter:junit-jupiter-engine:5.0.2'
 }
+
+
+//
+//
+// NPM and Node setup
+//
+//
+node {
+	//download a version to use.
+	//otherwise this will use npm from the system PATH
+	download = true
+}
+
+//add generated resources dir
+sourceSets {
+	main {
+	    resources {
+	        srcDir 'src/generated/resources'
+	    }
+	}
+}
+task initJsResourcesDir {
+	doFirst {
+		File resourcesDir = new File('src/generated/resources')
+		resourcesDir.mkdirs();
+		
+		//browserify wants the dir to exist already
+		new File(resourcesDir, 'template').mkdirs()
+	}
+}
+task cleanJsResourcesDir {
+	doLast {
+		new File(project.projectDir, 'src/generated/resources/').eachFile {
+			recursivelyDeleteFile(it)
+		}
+	}
+}
+def recursivelyDeleteFile(file) {
+	if (file.directory) {
+		file.eachFile {
+			recursivelyDeleteFile(it)
+		}
+	}
+	file.delete()
+}
+task npmBuild(type: NpmTask) {
+  args = ['run', 'build']
+}
+npmBuild.dependsOn initJsResourcesDir
+npmBuild.dependsOn npmInstall
+compileJava.dependsOn npmBuild
+//clean.dependsOn npm_cache_clean
+//clean.dependsOn cleanJsResourcesDir
