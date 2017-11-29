@@ -6,6 +6,10 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+/*
+ * This class can be used to generate a static file to test against.
+ * It can't contain failing tests for the real build however, as that would fail the build.
+ */
 public class J5T2Test {
 
 	@Test

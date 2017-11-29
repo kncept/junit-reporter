@@ -13,6 +13,8 @@ public class TestHTMLReporterSettings {
 	private String testResultsDir = "test-results";
 	private String testReportsDir = "reports/tests";
 	
+	private boolean failOnEmpty = true;
+	
 	public void setAggregated(boolean aggregated) {
 		this.aggregated = aggregated;
 	}
@@ -59,6 +61,14 @@ public class TestHTMLReporterSettings {
 	
 	public String getTestResultsDir() {
 		return testResultsDir;
+	}
+	
+	public void setFailOnEmpty(boolean failOnEmpty) {
+		this.failOnEmpty = failOnEmpty;
+	}
+	
+	public boolean isFailOnEmpty() {
+		return failOnEmpty;
 	}
 
 }

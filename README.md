@@ -1,6 +1,6 @@
 # junit-reporter [![Build Status](https://travis-ci.org/kncept/junit-reporter.svg?branch=master)](https://travis-ci.org/kncept/junit-reporter)
 
-Gradle Instructions:
+## Applying
 Add or merge this to the top of your buildscript libraries via the mavenCentral repository:
 
     buildscript {
@@ -8,7 +8,7 @@ Add or merge this to the top of your buildscript libraries via the mavenCentral 
             mavenCentral()
         }
         dependencies {
-            classpath 'com.kncept.junit5.reporter:junit-reporter:1.0.1'
+            classpath 'com.kncept.junit5.reporter:junit-reporter:1.0.2'
         }
     }
 
@@ -21,6 +21,9 @@ If you want more fine grained control, add it as a finalizer to another task. eg
 
     junitPlatformTest.finalizedBy 'junitHtmlReport'
     
+And you're done!
+
+## Configuration options
 
 If you need to do any customisation (aggregation, or you just don't like red...), Its possible to customise.
 Use the following config block (shown with default values):
@@ -41,4 +44,6 @@ Use the following config block (shown with default values):
 		testResultsDir = 'test-results'
 		testReportsDir = 'reports/tests'
 		
+		//Fail build when no XML files to process
+		failOnEmpty = true
 	}

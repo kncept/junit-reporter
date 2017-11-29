@@ -67,13 +67,21 @@ public class TestHTMLReporterPluginTask extends DefaultTask {
 					reporter.include(restResults);
 				}
 		}
-		if (reporter != null && settings.isAggregated())
+		if (reporter == null) { //no files? break the build by default.
+			if (settings.isFailOnEmpty())
+				throw new RuntimeException("No Test XML Reports to generate a HTML Report found.");
+			else {
+				System.out.println("No Test XML Reports to generate a HTML Report found.");
+				return;
+			}
+		}
+		if (settings.isAggregated())
 			reporter.write(testReportsDir, settings);
 		
 		if (settings.isAggregated()) {
 			System.out.println("Reports written to " + testReportsDir.getAbsolutePath() + File.separator + "index.html");
 		} else {
-			System.out.println("Reports written to " + testReportsDir.getAbsolutePath() + File.separator + "junit-platform" + File.separator + "index.html");
+			System.out.println("Reports written to " + testReportsDir.getAbsolutePath() + File.separator + reporter.getCategory() + File.separator + "index.html");
 		}
 	}
 	
@@ -83,7 +91,6 @@ public class TestHTMLReporterPluginTask extends DefaultTask {
 				file.getName().endsWith(".xml");
 	}
 	
-	
 	private XMLTestResults readFile(File file) throws IOException {
 		try (InputStream in = new FileInputStream(file)) {
 			return new Junit4DomReader(in);
@@ -92,7 +99,6 @@ public class TestHTMLReporterPluginTask extends DefaultTask {
 		} catch (SAXException e) {
 			throw new RuntimeException(e);
 		}
-		
 	}
 	
 }
