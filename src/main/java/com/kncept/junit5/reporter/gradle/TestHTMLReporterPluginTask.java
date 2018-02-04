@@ -2,6 +2,7 @@ package com.kncept.junit5.reporter.gradle;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -37,6 +38,10 @@ public class TestHTMLReporterPluginTask extends DefaultTask {
 			// 1 file per class
 			//reports/tests/test
 
+		if (settings.getTestResultsDir() == null)
+			throw new FileNotFoundException("config for testResultsDir is missing");
+		if (settings.getTestReportsDir() == null)
+			throw new FileNotFoundException("config for testReportsDir is missing");
 		
 		File testResultsDir = new File(buildDir, settings.getTestResultsDir());
 		File testReportsDir = new File(buildDir, settings.getTestReportsDir());
