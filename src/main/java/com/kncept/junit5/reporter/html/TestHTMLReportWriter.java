@@ -305,6 +305,8 @@ public class TestHTMLReportWriter {
 					InputStream in = getTemplate(fileName);
 			) {
 				copy(in, out);
+			} catch (IOException e) {
+				throw new IOException(fileName, e);
 			}
 		}
 		

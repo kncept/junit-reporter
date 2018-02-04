@@ -6,7 +6,7 @@ buildscript {
     }
     dependencies {
     	//previously released version of junit-reporter
-    	classpath 'com.kncept.junit5.reporter:junit-reporter:1.0.1'
+    	classpath 'com.kncept.junit5.reporter:junit-reporter:1.0.2'
     
     	//Junit 5 plugin
         classpath 'org.junit.platform:junit-platform-gradle-plugin:1.0.2'
@@ -35,9 +35,81 @@ sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
 group = 'com.kncept.junit5.reporter'
-version = '1.0.2'
+version = '1.0.3'
 
-junitPlatformTest.finalizedBy 'junitHtmlReport'
+//add generated source sets
+sourceSets {
+	// javascript
+	main {
+	    resources {
+	        srcDir 'generatedsrc/main/resources'
+	    }
+	}
+	//JUnit5
+	test {
+	    resources {
+	        srcDir 'generatedsrc/test/resources'
+	    }
+	}
+	pretest {
+		java {
+			srcDir 'src/pretest/java'
+		}
+	}
+}
+task initGeneratedDirectories {
+	doFirst {
+		File resourcesDir = new File('generatedsrc/main/resources')
+		resourcesDir.mkdirs();
+		
+		resourcesDir = new File('generatedsrc/test/resources')
+		resourcesDir.mkdirs();
+	}
+}
+task cleanGeneratedDirectories {
+	doLast {
+		recursivelyDeleteFile(new File(project.projectDir, 'generatedsrc'))
+	}
+}
+def recursivelyDeleteFile(file) {
+	if (file.directory) {
+		file.eachFile {
+			recursivelyDeleteFile(it)
+		}
+	}
+	file.delete()
+}
+
+junitPlatform {
+	filters {
+		tags {
+			exclude 'test-data'
+		}
+	}
+}
+
+task compilePretest (type: JavaCompile) {
+	source = sourceSets.pretest.java.srcDirs
+	classpath = project.files(project.sourceSets.test.compileClasspath, project.sourceSets.pretest.compileClasspath)
+	destinationDir = sourceSets.pretest.output.classesDir
+}
+
+// based on
+// https://github.com/junit-team/junit5/issues/700#issuecomment-283374073
+// http://junit.org/junit5/docs/current/user-guide/#running-tests-console-launcher
+task generateTestData(type: JavaExec) {
+    classpath = project.sourceSets.pretest.runtimeClasspath
+    //classpath = project.files(project.sourceSets.test.runtimeClasspath, project.sourceSets.pretest.runtimeClasspath)
+    main 'org.junit.platform.console.ConsoleLauncher'
+    args '--scan-class-path'
+    args '--reports-dir=' + new File(project.projectDir, 'generatedsrc/test/resources/').absolutePath
+    //args '--include-tag=test-data'
+    ignoreExitValue true
+}
+generateTestData.dependsOn compilePretest
+generateTestData.dependsOn initGeneratedDirectories
+testClasses.dependsOn generateTestData
+//junitPlatformTest.dependsOn generateTestData
 
 task javadocJar(type: Jar) {
     classifier = 'javadoc'
@@ -98,6 +170,7 @@ if (project.hasProperty('ossrhUsername')) {
 if (project.hasProperty('ossrhPassword')) {
 	password = ossrhPassword
 }
+uploadArchives.dependsOn check
 
 uploadArchives {
   repositories {
@@ -172,7 +245,6 @@ task pluginDescriptor( type: Exec ) {
 }
 //project.compileGroovy.doLast{ pluginDescriptor.execute() }
 
-
 dependencies {
     //Maven plugin dependencies
     compile 'org.apache.maven:maven-plugin-api:3.3.9'
@@ -181,57 +253,23 @@ dependencies {
     //JUnit5 dependencies
 	testCompile 'org.junit.jupiter:junit-jupiter-api:5.0.2'
 	testRuntime 'org.junit.jupiter:junit-jupiter-engine:5.0.2'
+	
+	pretestCompile 'org.junit.jupiter:junit-jupiter-api:5.0.2'
+	pretestRuntime 'org.junit.jupiter:junit-jupiter-engine:5.0.2'
+	pretestRuntime 'org.junit.platform:junit-platform-gradle-plugin:1.0.2'
 }
 
-
-//
-//
-// NPM and Node setup
-//
-//
 node {
 	//download a version to use.
 	//otherwise this will use npm from the system PATH
 	download = true
 }
 
-//add generated resources dir
-sourceSets {
-	main {
-	    resources {
-	        srcDir 'src/generated/resources'
-	    }
-	}
-}
-task initJsResourcesDir {
-	doFirst {
-		File resourcesDir = new File('src/generated/resources')
-		resourcesDir.mkdirs();
-		
-		//browserify wants the dir to exist already
-		new File(resourcesDir, 'template').mkdirs()
-	}
-}
-task cleanJsResourcesDir {
-	doLast {
-		new File(project.projectDir, 'src/generated/resources/').eachFile {
-			recursivelyDeleteFile(it)
-		}
-	}
-}
-def recursivelyDeleteFile(file) {
-	if (file.directory) {
-		file.eachFile {
-			recursivelyDeleteFile(it)
-		}
-	}
-	file.delete()
-}
 task npmBuild(type: NpmTask) {
   args = ['run', 'build']
 }
-npmBuild.dependsOn initJsResourcesDir
+npmBuild.dependsOn initGeneratedDirectories
 npmBuild.dependsOn npmInstall
 compileJava.dependsOn npmBuild
 //clean.dependsOn npm_cache_clean
-//clean.dependsOn cleanJsResourcesDir
+clean.dependsOn cleanGeneratedDirectories

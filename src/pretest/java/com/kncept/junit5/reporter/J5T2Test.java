@@ -49,13 +49,11 @@ public class J5T2Test {
 	}
 	
 	@Test
-	@Disabled
 	public void failingTest() {
 		fail("Failure Message passed into Assertions.fail");
 	}
 	
 	@Test
-	@Disabled
 	public void exception() {
 		throw new RuntimeException("RuntimeException message");
 	}

@@ -68,6 +68,13 @@ public class TestResultsXMLReaderTest {
 		assertEquals(Passed, testCase.getStatus());
 	}
 	
+//	@Test
+//	public void canFindFailureMessage() {
+//		TestCase testCase = mirageTestCase("className");
+//		
+//	}
+	
+	
 	private TestCase testCase(String name) throws Exception {
 		XMLTestResults testResults = testResults();
 		for(TestCase testCase: testResults.testcases())
@@ -75,9 +82,20 @@ public class TestResultsXMLReaderTest {
 				return testCase;
 		throw new RuntimeException("Unable to find a testcase with name " + name);
 	}
-	
 	private XMLTestResults testResults() throws Exception {
 		InputStream in = getClass().getClassLoader().getResourceAsStream("TEST-junit-jupiter.xml");
+		return new Junit4DomReader(in);
+	}
+	
+	private TestCase mirageTestCase(String name) throws Exception {
+		XMLTestResults testResults = failedMirageTestResults();
+		for(TestCase testCase: testResults.testcases())
+			if (testCase.getName().equals(name))
+				return testCase;
+		throw new RuntimeException("Unable to find a testcase with name " + name);
+	}
+	private XMLTestResults failedMirageTestResults() throws Exception {
+		InputStream in = getClass().getClassLoader().getResourceAsStream("TEST-mirage-project-sample.xml");
 		return new Junit4DomReader(in);
 	}
 }

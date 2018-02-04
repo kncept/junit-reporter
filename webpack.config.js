@@ -8,7 +8,7 @@ module.exports = {
 	},
 	output: {
 		filename: '[name].js',
-		path: path.resolve(__dirname  + '/src/generated/resources/template/')
+		path: path.resolve(__dirname  + '/generatedsrc/main/resources/template/')
 	},
 	module: {
 		loaders: [
