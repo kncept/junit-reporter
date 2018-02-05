@@ -8,7 +8,7 @@ Add or merge this to the top of your buildscript libraries via the mavenCentral 
             mavenCentral()
         }
         dependencies {
-            classpath 'com.kncept.junit5.reporter:junit-reporter:1.0.2'
+            classpath 'com.kncept.junit5.reporter:junit-reporter:1.0.3'
         }
     }
 
@@ -47,3 +47,18 @@ Use the following config block (shown with default values):
 		//Fail build when no XML files to process
 		failOnEmpty = true
 	}
+
+## Command Line Usage
+Command line support has been built.<br/>
+The jar file is executable, and the options have the same names as in the gradle config block.<br/>
+The main class name is com.kncept.junit5.reporter.html.TestHTMLReportProcessor.<br/>
+Options use a simple equals sign.<br/>
+ eg: `java -jar junit-reporter-1.0.3 aggregated=true` to process reports in the current dir
+
+## Final Thoughts
+
+It seems a few people use this. Glad to help. It does take a while to keep things ticking along though.<br />
+Donations accepted: <br/>
+ETH: 5db8a572ba967f5611740fba29957be46a58cdef <br/>
+BTC: 1EnoXwWabBzeSWyRYU775PKqLLKp49Vub1 <br/>
+Beer: anytime! <br/>
