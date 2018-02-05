@@ -18,9 +18,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+import com.kncept.junit5.reporter.domain.CssRagStatus;
 import com.kncept.junit5.reporter.domain.TestCase;
 import com.kncept.junit5.reporter.domain.TestCaseStatus;
-import com.kncept.junit5.reporter.gradle.TestHTMLReporterSettings;
 import com.kncept.junit5.reporter.xml.XMLTestResults;
 
 public class TestHTMLReportWriter {
@@ -52,7 +52,7 @@ public class TestHTMLReportWriter {
 		testcases.add(testcase);
 	}
 	
-	public void write(File outputDir, TestHTMLReporterSettings settings) throws IOException {
+	public void write(File outputDir, CssRagStatus ragStatusSettings) throws IOException {
 		if (testcases.isEmpty())
 			return;
 		
@@ -65,14 +65,14 @@ public class TestHTMLReportWriter {
 			htmlDir.mkdirs();	
 		}
 		
-		writeDynamicData(htmlDir, settings);
+		writeDynamicData(htmlDir, ragStatusSettings);
 		writeStaticData(htmlDir);
 		
 	}
 	
-	public void writeDynamicData(File htmlDir, TestHTMLReporterSettings settings) throws IOException {
+	public void writeDynamicData(File htmlDir, CssRagStatus ragStatusSettings) throws IOException {
 		writeDataJs(htmlDir);
-		writeRagCss(htmlDir, settings);
+		writeRagCss(htmlDir, ragStatusSettings);
 	}
 	
 	private void writeDataJs(File htmlDir) throws IOException {
@@ -112,6 +112,10 @@ public class TestHTMLReportWriter {
 						toJsMapValue("testName", next.getName()),
 						toJsMapValue("duration", next.getDuration().toPlainString()),
 						toJsMapValue("status", next.getStatus().name())
+						//not ready yet. This should probably be in a "detail" view
+//						toJsMapArrayValue("systemOut", next.getSystemOut()),
+//						toJsMapArrayValue("systemErr", next.getSystemErr())
+						
 				));
 				
 				totals.include(next.getStatus());
@@ -186,14 +190,14 @@ public class TestHTMLReportWriter {
 		
 	}
 	
-	private void writeRagCss(File htmlDir, TestHTMLReporterSettings settings) throws IOException {
+	private void writeRagCss(File htmlDir, CssRagStatus ragStatusSettings) throws IOException {
 		try (		
 				PrintStream out = new PrintStream(new FileOutputStream(new File(htmlDir, "rag.css")));
 		) {
 			out.println("/*RAG status indicators*/");
-			outputCss(out, "r", settings.getCssRed());
-			outputCss(out, "a", settings.getCssAmber());
-			outputCss(out, "g", settings.getCssGreen());
+			outputCss(out, "r", ragStatusSettings.getRed());
+			outputCss(out, "a", ragStatusSettings.getAmber());
+			outputCss(out, "g", ragStatusSettings.getGreen());
 		}
 	}
 	
@@ -267,6 +271,16 @@ public class TestHTMLReportWriter {
 	}
 	private String toJsMapValue(String key, String value) {
 		return "" + key + ": \"" + addDelimiters(value) + "\"";
+	}
+	private String toJsMapArrayValue(String key, List<String> values) {
+		StringBuilder sb = new StringBuilder("[ ");
+		for(int i = 0; i < values.size(); i++) {
+			if (i != 0)
+				sb.append(", ");
+			sb.append("\"" + addDelimiters(values.get(i)) + "\"");
+		}
+		sb.append("]");
+		return "" + key + ": \"" + sb.toString() + "\"";
 	}
 	//because of how JsonTable works, turn the map into a NVP array
 	private String toJsNvpArray(Map<String, String> stringMap) {

@@ -109,7 +109,16 @@ task generateTestData(type: JavaExec) {
 generateTestData.dependsOn compilePretest
 generateTestData.dependsOn initGeneratedDirectories
 testClasses.dependsOn generateTestData
-//junitPlatformTest.dependsOn generateTestData
+
+task reportOnTestData(type: JavaExec) {
+    classpath = project.files(project.sourceSets.pretest.runtimeClasspath, project.sourceSets.main.runtimeClasspath)
+    main 'com.kncept.junit5.reporter.html.TestHTMLReportProcessor'
+    args 'testResultsDir=' + new File(project.projectDir, 'generatedsrc/test/resources/').absolutePath
+    args 'testReportsDir=' + new File(project.projectDir, 'generatedsrc/test/resources/').absolutePath
+    args 'aggregatedReporting=true'
+}
+reportOnTestData.dependsOn generateTestData
+testClasses.dependsOn reportOnTestData
 
 task javadocJar(type: Jar) {
     classifier = 'javadoc'

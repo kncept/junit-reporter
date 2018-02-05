@@ -9,12 +9,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigDecimal;
 
-import org.gradle.api.tasks.testing.TestReport;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import com.kncept.junit5.reporter.domain.CssRagStatus;
 import com.kncept.junit5.reporter.domain.TestCase;
-import com.kncept.junit5.reporter.gradle.TestHTMLReporterSettings;
 
 public class TestHTMLReportWriterTest {
 	private int counter = 0;
@@ -44,7 +43,7 @@ public class TestHTMLReportWriterTest {
 		writer.include(generateTestCase());
 		writer.include(generateTestCase());
 
-		writer.write(htmlDir, new TestHTMLReporterSettings());
+		writer.write(htmlDir, new CssRagStatus());
 	}
 	
 	@Test

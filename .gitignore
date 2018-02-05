@@ -1,6 +1,6 @@
 
 #project specific
-src/generated/
+generatedsrc
 
 # gradle
 /.gradle/

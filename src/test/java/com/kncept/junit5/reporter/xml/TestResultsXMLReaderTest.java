@@ -9,7 +9,6 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.io.FileDescriptor;
 import java.io.InputStream;
 import java.util.List;
 
@@ -86,16 +85,5 @@ public class TestResultsXMLReaderTest {
 		InputStream in = getClass().getClassLoader().getResourceAsStream("TEST-junit-jupiter.xml");
 		return new Junit4DomReader(in);
 	}
-	
-	private TestCase mirageTestCase(String name) throws Exception {
-		XMLTestResults testResults = failedMirageTestResults();
-		for(TestCase testCase: testResults.testcases())
-			if (testCase.getName().equals(name))
-				return testCase;
-		throw new RuntimeException("Unable to find a testcase with name " + name);
-	}
-	private XMLTestResults failedMirageTestResults() throws Exception {
-		InputStream in = getClass().getClassLoader().getResourceAsStream("TEST-mirage-project-sample.xml");
-		return new Junit4DomReader(in);
-	}
+
 }
