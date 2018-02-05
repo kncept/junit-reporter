@@ -18,7 +18,9 @@ var propertiesHeaders = [
 
 var testHeaders = [
     {key: 'testClass', label: 'Class'},
-    {key: 'testName', label: 'Name'},
+    {key: 'testName', label: 'Name', cell: function(item){
+        return item.unsuccessfulMessage == null ? item.testName : <span>{item.testName}<br/>{item.unsuccessfulMessage}</span>;
+    }},
     {key: 'status', label: 'Status', cell: function(item){
         return <span className={item.status == 'Passed' ? "g" : (item.status == 'Skipped' ? "a" : "r")}>{item.status}</span>;
     }},

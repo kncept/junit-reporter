@@ -13,6 +13,8 @@ public class TestCase {
 	private final List<String> systemOut;
 	private final List<String> systemErr;
 	
+	private String unsuccessfulMessage;
+	
 	public TestCase(String name, String classname, BigDecimal duration, TestCaseStatus status) {
 		this.name = name;
 		this.classname = classname;
@@ -50,5 +52,13 @@ public class TestCase {
 	
 	public List<String> getSystemErr() {
 		return systemErr;
+	}
+	
+	public void setUnsuccessfulMessage(String unsuccessfulMessage) {
+		this.unsuccessfulMessage = unsuccessfulMessage;
+	}
+	
+	public String getUnsuccessfulMessage() {
+		return unsuccessfulMessage;
 	}
 }

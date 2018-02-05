@@ -4,8 +4,6 @@ import static com.kncept.junit5.reporter.domain.TestCaseStatus.Errored;
 import static com.kncept.junit5.reporter.domain.TestCaseStatus.Failed;
 import static com.kncept.junit5.reporter.domain.TestCaseStatus.Passed;
 import static com.kncept.junit5.reporter.domain.TestCaseStatus.Skipped;
-import static java.lang.System.lineSeparator;
-import static java.util.Arrays.asList;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -58,23 +56,35 @@ public class Junit4DomReader implements XMLTestResults {
 			
 			TestCaseStatus status = Passed; //default output is success.
 			
-			Node skippedNode = child(node, "skipped");
+			String unsuccessfulMessage = null;
+			
+			Node statusNode = child(node, "skipped");
 //			<skipped><![CDATA[public void com.kncept.junit5.reporter.J5T2Test.skippedTest() is @Disabled]]></skipped>
-			if (skippedNode != null) {
+			if (statusNode != null) {
 				status = Skipped;
+				unsuccessfulMessage = attr(statusNode, "message");
 			}
 			
-			Node failureNode = child(node, "failure");
+			statusNode = child(node, "failure");
 //			<failure message="Failure Message passed into Assertions.fail" type="org.opentest4j.AssertionFailedError"><![CDATA[org.opentest4j.AssertionFailedError: Failure Message passed into Assertions.fail
-			if (failureNode != null) {
+			if (statusNode != null) {
 				status = Failed;
+				unsuccessfulMessage = attr(statusNode, "message");
 			}
 			
-			Node errorNode = child(node, "error");
+			statusNode = child(node, "error");
+//			N.B. "message" is optional
 //			<error message="RuntimeException message" type="java.lang.RuntimeException"><![CDATA[java.lang.RuntimeException: RuntimeException message
-			if (errorNode != null) {
+			if (statusNode != null) {
 				status = Errored;
-			}
+
+				String message = attr(statusNode, "message");
+				String type = attr(statusNode, "type");			
+				if (message != null && type != null)
+					unsuccessfulMessage =  type + ": " + message;
+				else if (type != null) 
+					unsuccessfulMessage = type;
+			}			
 			
 			TestCase testCase = new TestCase(
 					attr(node, "name"), 
@@ -83,6 +93,7 @@ public class Junit4DomReader implements XMLTestResults {
 					status);
 			testcases.add(testCase);
 			
+			testCase.setUnsuccessfulMessage(unsuccessfulMessage);
 			testCase.getSystemOut().addAll(handleTextNode(child(node, "system-out")));
 			testCase.getSystemErr().addAll(handleTextNode(child(node, "system-err")));
 		}
@@ -90,7 +101,8 @@ public class Junit4DomReader implements XMLTestResults {
 	}
 	
 	private String attr(Node node, String name) {
-		return node.getAttributes().getNamedItem(name).getTextContent();
+		Node item = node.getAttributes().getNamedItem(name);
+		return item == null ? null : item.getTextContent();
 	}
 	
 	private Node child(Node parent, String name) {

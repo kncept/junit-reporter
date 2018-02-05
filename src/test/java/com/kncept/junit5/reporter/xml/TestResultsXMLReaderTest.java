@@ -50,7 +50,7 @@ public class TestResultsXMLReaderTest {
 	
 	@Test
 	public void canFindErroredTests() throws Exception {
-		TestCase testCase = testCase("exception()");
+		TestCase testCase = testCase("exceptionWithoutMessage()");
 		assertEquals(Errored, testCase.getStatus());
 	}
 	
@@ -66,13 +66,6 @@ public class TestResultsXMLReaderTest {
 		TestCase testCase = testCase("j5Stub()");
 		assertEquals(Passed, testCase.getStatus());
 	}
-	
-//	@Test
-//	public void canFindFailureMessage() {
-//		TestCase testCase = mirageTestCase("className");
-//		
-//	}
-	
 	
 	private TestCase testCase(String name) throws Exception {
 		XMLTestResults testResults = testResults();

@@ -107,16 +107,20 @@ public class TestHTMLReportWriter {
 			out.println("var tests = [");
 			while(tests.hasNext()) {
 				TestCase next = tests.next();
-				out.print(toJsMap(
-						toJsMapValue("testClass", next.getClassname()),
-						toJsMapValue("testName", next.getName()),
-						toJsMapValue("duration", next.getDuration().toPlainString()),
-						toJsMapValue("status", next.getStatus().name())
-						//not ready yet. This should probably be in a "detail" view
-//						toJsMapArrayValue("systemOut", next.getSystemOut()),
-//						toJsMapArrayValue("systemErr", next.getSystemErr())
-						
-				));
+				List<String> attrs = new ArrayList<>();
+				attrs.add(toJsMapValue("testClass", next.getClassname()));
+				attrs.add(toJsMapValue("testName", next.getName()));
+				attrs.add(toJsMapValue("duration", next.getDuration().toPlainString()));
+				attrs.add(toJsMapValue("status", next.getStatus().name()));
+				
+				if (next.getUnsuccessfulMessage() != null)
+					attrs.add(toJsMapValue("unsuccessfulMessage", next.getUnsuccessfulMessage()));
+				
+				//not ready yet. This should probably be in a "detail" view
+//				toJsMapArrayValue("systemOut", next.getSystemOut())
+//				toJsMapArrayValue("systemErr", next.getSystemErr())
+				
+				out.print(toJsMap(attrs.toArray(new String[attrs.size()])));
 				
 				totals.include(next.getStatus());
 				getSummaryBucket(byPackage, next.getPackagename()).include(next.getStatus());

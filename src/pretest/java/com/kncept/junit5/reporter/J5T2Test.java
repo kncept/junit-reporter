@@ -38,7 +38,7 @@ public class J5T2Test {
 	}
 	
 	@Test
-	@DisplayName("test that has been renamed")
+	@DisplayName("This test has a fancy display name")
 	public void renamedTest() {
 	}
 	
@@ -49,13 +49,25 @@ public class J5T2Test {
 	}
 	
 	@Test
+	@Disabled("It's good practice to include a REASON when you disable a test")
+	public void skippedTestWithReason() {
+		fail("should have skipped this");
+	}
+	
+	
+	@Test
 	public void failingTest() {
 		fail("Failure Message passed into Assertions.fail");
 	}
 	
 	@Test
-	public void exception() {
+	public void exceptionWithMessage() {
 		throw new RuntimeException("RuntimeException message");
+	}
+	
+	@Test
+	public void exceptionWithoutMessage() {
+		throw new RuntimeException();
 	}
 	
 }
