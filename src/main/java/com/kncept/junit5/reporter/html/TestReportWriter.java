@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintStream;
+import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -123,9 +124,9 @@ public class TestReportWriter {
 				
 				out.print(toJsMap(attrs.toArray(new String[attrs.size()])));
 				
-				totals.include(next.getStatus());
-				getSummaryBucket(byPackage, next.getPackagename()).include(next.getStatus());
-				getSummaryBucket(byClass, next.getClassname()).include(next.getStatus());
+				totals.include(next);
+				getSummaryBucket(byPackage, next.getPackagename()).include(next);
+				getSummaryBucket(byClass, next.getClassname()).include(next);
 				
 				if(tests.hasNext()) {
 					out.println(",");
@@ -152,15 +153,7 @@ public class TestReportWriter {
 			out.println("var packageSummary = [");
 			while(packageSummary.hasNext()) {
 				SummaryBucket next = packageSummary.next();
-				out.print(toJsMap(
-						toJsMapValue("key", next.key),
-						toJsMapValue("passed", Integer.toString(next.passed)),
-						toJsMapValue("skipped", Integer.toString(next.skipped)),
-						toJsMapValue("failed", Integer.toString(next.failed)),
-						toJsMapValue("errored", Integer.toString(next.errored)),
-						toJsMapValue("available", Integer.toString(next.passed + next.skipped + next.failed + next.errored)),
-						toJsMapValue("executed", Integer.toString(next.passed + next.failed + next.errored))
-						));
+				out.print(next.toString());
 				if(packageSummary.hasNext()) {
 					out.println(",");
 				} else {
@@ -173,15 +166,7 @@ public class TestReportWriter {
 			out.println("var classSummary = [");
 			while(classSummary.hasNext()) {
 				SummaryBucket next = classSummary.next();
-				out.print(toJsMap(
-						toJsMapValue("key", next.key),
-						toJsMapValue("passed", Integer.toString(next.passed)),
-						toJsMapValue("skipped", Integer.toString(next.skipped)),
-						toJsMapValue("failed", Integer.toString(next.failed)),
-						toJsMapValue("errored", Integer.toString(next.errored)),
-						toJsMapValue("available", Integer.toString(next.passed + next.skipped + next.failed + next.errored)),
-						toJsMapValue("executed", Integer.toString(next.passed + next.failed + next.errored))
-						));
+				out.print(next.toString());
 				if(classSummary.hasNext()) {
 					out.println(",");
 				} else {
@@ -193,7 +178,7 @@ public class TestReportWriter {
 			out.flush();
 		}
 		
-	}
+	} 
 	
 	private void writeRagCss(File htmlDir, CssRagStatus ragStatusSettings) throws IOException {
 		try (		
@@ -217,17 +202,18 @@ public class TestReportWriter {
 		out.println("}");
 	}
 	
-	static class SummaryBucket {
-		public final String key;
-		public int passed;
-		public int skipped;
-		public int failed;
-		public int errored;
+	private class SummaryBucket {
+		private final String key;
+		private int passed;
+		private int skipped;
+		private int failed;
+		private int errored;
+		private BigDecimal duration = BigDecimal.ZERO;
 		public SummaryBucket(String key) {
 			this.key = key;
 		}
-		public void include(TestCaseStatus status) {
-			switch(status) {
+		public void include(TestCase test) {
+			switch(test.getStatus()) {
 			case Passed:
 				passed++;
 				break;
@@ -241,6 +227,21 @@ public class TestReportWriter {
 				errored++;
 				break;
 			}
+			
+			duration = duration.add(test.getDuration());
+		}
+		
+		public String toString() {
+			return toJsMap(
+					toJsMapValue("key", key),
+					toJsMapValue("passed", Integer.toString(passed)),
+					toJsMapValue("skipped", Integer.toString(skipped)),
+					toJsMapValue("failed", Integer.toString(failed)),
+					toJsMapValue("errored", Integer.toString(errored)),
+					toJsMapValue("available", Integer.toString(passed + skipped + failed + errored)),
+					toJsMapValue("executed", Integer.toString(passed + failed + errored)),
+					toJsMapValue("duration", duration.toString())
+					);
 		}
 	}
 	

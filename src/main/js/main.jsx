@@ -5,41 +5,56 @@ import ReactTable from 'react-table';
 import 'react-table/react-table.css';
 
 var packageSummaryHeaders = [
-    {Header: 'Package', accessor: 'key',     maxWidth: 300},
-    {Header: 'Passed',  accessor: 'passed',  maxWidth: 150, Cell: props => <span className={props.value == 0 ? "r" : "g"}>{props.value}</span>},
-    {Header: 'Skipped', accessor: 'skipped', maxWidth: 150, Cell: props => <span className={props.value == 0 ? ""  : "r"}>{props.value}</span>},
-    {Header: 'Failed',  accessor: 'failed',  maxWidth: 150, Cell: props => <span className={props.value == 0 ? ""  : "r"}>{props.value}</span>},
-    {Header: 'Errored', accessor: 'errored', maxWidth: 150, Cell: props => <span className={props.value == 0 ? ""  : "r"}>{props.value}</span>}
+    {Header: 'Package',  accessor: 'key',      width: 400},
+    {Header: 'Passed',   accessor: 'passed',   width: 100, Cell: props => <span className={props.value == 0 ? "r" : "g"}>{props.value}</span>},
+    {Header: 'Skipped',  accessor: 'skipped',  width: 100, Cell: props => <span className={props.value == 0 ? ""  : "r"}>{props.value}</span>},
+    {Header: 'Failed',   accessor: 'failed',   width: 100, Cell: props => <span className={props.value == 0 ? ""  : "r"}>{props.value}</span>},
+    {Header: 'Errored',  accessor: 'errored',  width: 100, Cell: props => <span className={props.value == 0 ? ""  : "r"}>{props.value}</span>},
+    {Header: 'Duration', accessor: 'duration', width: 100}
 ];
 
 var classSummaryHeaders = [
-    {Header: 'Class',   accessor: 'key',     maxWidth: 300},
-    {Header: 'Passed',  accessor: 'passed',  maxWidth: 150, Cell: props => <span className={props.value == 0 ? "r" : "g"}>{props.value}</span>},
-    {Header: 'Skipped', accessor: 'skipped', maxWidth: 150, Cell: props => <span className={props.value == 0 ? ""  : "r"}>{props.value}</span>},
-    {Header: 'Failed',  accessor: 'failed',  maxWidth: 150, Cell: props => <span className={props.value == 0 ? ""  : "r"}>{props.value}</span>},
-    {Header: 'Errored', accessor: 'errored', maxWidth: 150, Cell: props => <span className={props.value == 0 ? ""  : "r"}>{props.value}</span>}
+    {Header: 'Class',    accessor: 'key',      width: 400},
+    {Header: 'Passed',   accessor: 'passed',   width: 100, Cell: props => <span className={props.value == 0 ? "r" : "g"}>{props.value}</span>},
+    {Header: 'Skipped',  accessor: 'skipped',  width: 100, Cell: props => <span className={props.value == 0 ? ""  : "r"}>{props.value}</span>},
+    {Header: 'Failed',   accessor: 'failed',   width: 100, Cell: props => <span className={props.value == 0 ? ""  : "r"}>{props.value}</span>},
+    {Header: 'Errored',  accessor: 'errored',  width: 100, Cell: props => <span className={props.value == 0 ? ""  : "r"}>{props.value}</span>},
+    {Header: 'Duration', accessor: 'duration', width: 100}
 ];
 
 var testDataHeaders = [
-    {Header: 'Class',    accessor: 'testClass', maxWidth: 300},
-    {Header: 'Name',     accessor: 'testName',  maxWidth: 300},
-    {Header: 'Status',   accessor: 'status',    maxWidth: 150, Cell: props => <span className={props.value == 'Passed' ? "g" : (props.value == 'Skipped' ? "a" : "r")}>{props.value}</span>},
-    {Header: 'Duration', accessor: 'duration',  maxWidth: 150},
+    {Header: 'Class',    accessor: 'testClass', width: 400},
+    {Header: 'Name',     accessor: 'testName',  width: 400},
+    {Header: 'Status',   accessor: 'status',    width: 100, Cell: props => <span className={props.value == 'Passed' ? "g" : (props.value == 'Skipped' ? "a" : "r")}>{props.value}</span>},
+    {Header: 'Duration', accessor: 'duration',  width: 100},
 ];
 
 var propertiesHeaders = [
-    {Header: 'Name', accessor: 'name', maxWidth: 300},
+    {Header: 'Name',  accessor: 'name', width: 400},
     {Header: 'Value', accessor: 'value'}
 ];
 
-class TestDetails extends React.Component {
-    constructor(props) {
-        super(props);
-    }
-    render() {
-        return  this.props.value.stackTrace == null ? null : <pre>{this.props.value.stackTrace}</pre>;
-    }
+//some "nice" pagination size options.
+function pageSizeOptions(data) {
+    if (data.length <= 20)
+        return [10, 20];
+    if (data.length <= 50)
+        return [10, 20, 50];
+    if (data.length <= 100)
+        return [10, 20, 50, 100]
+    if (data.length <= 500)
+        return [10, 20, 50, 100, 500];
+    return [10, 20, 50, 100, 500, 1000]; 
 }
+function pageSize(data) {
+    if (data.length <= 20)
+        return data.length;
+    return undefined; //don't set the pagesize - allow component to control it
+}
+function showPagination(data) {
+    return data.length > 20;
+}
+
 
 class Tabs extends React.Component {
     constructor(props) {
@@ -53,7 +68,7 @@ class Tabs extends React.Component {
         return <div className="tabPane">
                 <div className="tabHeaders">{
                     this.props.titles.map((title, index) => 
-                        <span key={index} className={index != this.state.index ? "tabTitle" : "tabTitle selectedTabTitle"}><a href="#" onClick={() => this.switchTab(index)}>{title}</a></span>
+                        <span key={index} className={index != this.state.index ? "tabTitle" : "selectedTabTitle"}><a href="#" onClick={() => this.switchTab(index)}>{title}</a></span>
                     )}
                 </div><div className="tabContent">
                 {this.props.children[this.state.index]}
@@ -61,6 +76,31 @@ class Tabs extends React.Component {
     }
     switchTab(newIndex) {
         this.setState({index: newIndex});
+    }
+}
+
+function regexFilter(filter, row) {
+    try {
+        return new RegExp(filter.value).test(row[filter.id]);
+    } catch (err) { //bad RegExp definition
+        return true;
+    }
+}
+
+class OptionedReactTable extends React.Component {
+    render() {
+        return <div>
+            <ReactTable
+                data={this.props.data}
+                columns={this.props.columns}
+                filterable={true}
+                defaultFilterMethod={regexFilter}
+                pageSizeOptions={pageSizeOptions(this.props.data)}
+                pageSize={pageSize(this.props.data)}
+                showPagination={showPagination(this.props.data)}
+                SubComponent={this.props.SubComponent}
+            />
+        </div>
     }
 }
 
@@ -86,11 +126,11 @@ ReactDOM.render(
                 <div>Success Rate: <span className={summary.passed == summary.executed ? "g" : "r"}>{100 * Number(summary.passed) / Number(summary.executed)}%</span></div>
             </span>
         </div>
-        <ReactTable data={packageSummary} columns={packageSummaryHeaders} />
-        <ReactTable data={classSummary} columns={classSummaryHeaders} />
-        <ReactTable data={tests} columns={testDataHeaders} SubComponent={(row) => {console.log(row); return <TestDetails value={row.original} />}} />
-        <ReactTable data={testSuiteProps} columns={propertiesHeaders} />
-        <ReactTable data={sysprops} columns={propertiesHeaders} />
+        <OptionedReactTable data={packageSummary} columns={packageSummaryHeaders} />
+        <OptionedReactTable data={classSummary}   columns={classSummaryHeaders} />
+        <OptionedReactTable data={tests}          columns={testDataHeaders} SubComponent={(row) => {return row.original.stackTrace == null ? null : <pre>{row.original.stackTrace}</pre>}} />
+        <OptionedReactTable data={testSuiteProps} columns={propertiesHeaders} />
+        <OptionedReactTable data={sysprops}       columns={propertiesHeaders} SubComponent={(row) => {return <pre>{row.original.value}</pre>}} />
     </Tabs>
     </span>,
     document.getElementById('root')

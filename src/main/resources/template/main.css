@@ -9,15 +9,23 @@
 	padding-bottom: 5px;
 }
 .tabTitle {
-	padding-left: 10px;
-	padding-right: 10px;
-	border: 1px solid;
-	
+	padding: 5px 15px 5px 15px;
 	text-align: center;
+	border-bottom: 2px solid;
+}
+.tabTitle a {
+	text-decoration: none;
 }
 .selectedTabTitle {
-	border: none;
+	padding: 5px 15px 5px 15px;
+	text-align: center;
 	font-weight: bold;
+	border-left: 2px solid;
+	border-right: 2px solid;
+	border-top: 2px solid;
+}
+.selectedTabTitle a {
+	text-decoration: none;
 }
 
 .mainSummary {
