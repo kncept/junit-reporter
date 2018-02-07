@@ -20,11 +20,11 @@ module.exports = {
 					//objectAssign: 'Object.assign'
 				}
 			},
-			{ //needed for https://www.npmjs.com/package/react-rte
+			{
 			    test: /\.css$/,
 			    loaders: [
 			      'style-loader',
-			      'css-loader?modules'
+			      'css-loader'
 			    ]
 			  }
 		]

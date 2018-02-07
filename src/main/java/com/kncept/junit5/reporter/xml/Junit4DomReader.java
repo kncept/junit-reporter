@@ -57,12 +57,14 @@ public class Junit4DomReader implements XMLTestResults {
 			TestCaseStatus status = Passed; //default output is success.
 			
 			String unsuccessfulMessage = null;
+			String stackTrace = null;
 			
 			Node statusNode = child(node, "skipped");
 //			<skipped><![CDATA[public void com.kncept.junit5.reporter.J5T2Test.skippedTest() is @Disabled]]></skipped>
 			if (statusNode != null) {
 				status = Skipped;
 				unsuccessfulMessage = attr(statusNode, "message");
+				stackTrace = statusNode.getTextContent();
 			}
 			
 			statusNode = child(node, "failure");
@@ -70,6 +72,7 @@ public class Junit4DomReader implements XMLTestResults {
 			if (statusNode != null) {
 				status = Failed;
 				unsuccessfulMessage = attr(statusNode, "message");
+				stackTrace = statusNode.getTextContent();
 			}
 			
 			statusNode = child(node, "error");
@@ -84,6 +87,7 @@ public class Junit4DomReader implements XMLTestResults {
 					unsuccessfulMessage =  type + ": " + message;
 				else if (type != null) 
 					unsuccessfulMessage = type;
+				stackTrace = statusNode.getTextContent();
 			}			
 			
 			TestCase testCase = new TestCase(
@@ -94,6 +98,7 @@ public class Junit4DomReader implements XMLTestResults {
 			testcases.add(testCase);
 			
 			testCase.setUnsuccessfulMessage(unsuccessfulMessage);
+			testCase.setStackTrace(stackTrace);
 			testCase.getSystemOut().addAll(handleTextNode(child(node, "system-out")));
 			testCase.getSystemErr().addAll(handleTextNode(child(node, "system-err")));
 		}

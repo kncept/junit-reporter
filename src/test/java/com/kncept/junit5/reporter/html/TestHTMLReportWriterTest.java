@@ -20,13 +20,13 @@ public class TestHTMLReportWriterTest {
 	
 	@Test
 	public void category() {
-		TestHTMLReportWriter writer = new TestHTMLReportWriter("junit-platform");
+		TestReportWriter writer = new TestReportWriter("junit-platform");
 		assertEquals("junit-platform", writer.getCategory());
 	}
 	
 	@Test
 	public void canFindTemplates() throws Exception {
-		TestHTMLReportWriter writer = new TestHTMLReportWriter("");
+		TestReportWriter writer = new TestReportWriter("");
 		try (InputStream template = writer.getTemplate("index.html")) {
 			Assertions.assertNotNull(template);
 		} catch (IOException e) {
@@ -37,7 +37,7 @@ public class TestHTMLReportWriterTest {
 	@Test
 	public void writesEnoughFiles() throws IOException {
 		File htmlDir = createTempDirectory(null).toFile();
-		TestHTMLReportWriter writer = new TestHTMLReportWriter("junit-platform");
+		TestReportWriter writer = new TestReportWriter("junit-platform");
 
 		writer.include(generateTestCase());
 		writer.include(generateTestCase());
@@ -48,7 +48,7 @@ public class TestHTMLReportWriterTest {
 	
 	@Test
 	public void canDelimitStringCorrectly() {
-		TestHTMLReportWriter writer = new TestHTMLReportWriter("");
+		TestReportWriter writer = new TestReportWriter("");
 		assertEquals("\\\\", writer.addDelimiters("\\"));
 		assertEquals("\\\"", writer.addDelimiters("\""));
 		assertEquals("\\n", writer.addDelimiters("\n"));

@@ -14,6 +14,7 @@ public class TestCase {
 	private final List<String> systemErr;
 	
 	private String unsuccessfulMessage;
+	private String stackTrace;
 	
 	public TestCase(String name, String classname, BigDecimal duration, TestCaseStatus status) {
 		this.name = name;
@@ -61,4 +62,12 @@ public class TestCase {
 	public String getUnsuccessfulMessage() {
 		return unsuccessfulMessage;
 	}
+	
+	public void setStackTrace(String stackTrace) {
+		this.stackTrace = stackTrace;
+	}
+	
+	public String getStackTrace() {
+		return stackTrace;
+	}			
 }

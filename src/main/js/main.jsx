@@ -1,92 +1,73 @@
 const React = require('react');
 const ReactDOM = require('react-dom');
 
-const JsonTable = require('react-json-table');
+import ReactTable from 'react-table';
+import 'react-table/react-table.css';
 
-// page skeleton
-ReactDOM.render(
-    <span>
-        <h1>Test Results</h1>
-        <div id="results"></div>
-    </span>,
-        document.getElementById('root'));
+var packageSummaryHeaders = [
+    {Header: 'Package', accessor: 'key',     maxWidth: 300},
+    {Header: 'Passed',  accessor: 'passed',  maxWidth: 150, Cell: props => <span className={props.value == 0 ? "r" : "g"}>{props.value}</span>},
+    {Header: 'Skipped', accessor: 'skipped', maxWidth: 150, Cell: props => <span className={props.value == 0 ? ""  : "r"}>{props.value}</span>},
+    {Header: 'Failed',  accessor: 'failed',  maxWidth: 150, Cell: props => <span className={props.value == 0 ? ""  : "r"}>{props.value}</span>},
+    {Header: 'Errored', accessor: 'errored', maxWidth: 150, Cell: props => <span className={props.value == 0 ? ""  : "r"}>{props.value}</span>}
+];
+
+var classSummaryHeaders = [
+    {Header: 'Class',   accessor: 'key',     maxWidth: 300},
+    {Header: 'Passed',  accessor: 'passed',  maxWidth: 150, Cell: props => <span className={props.value == 0 ? "r" : "g"}>{props.value}</span>},
+    {Header: 'Skipped', accessor: 'skipped', maxWidth: 150, Cell: props => <span className={props.value == 0 ? ""  : "r"}>{props.value}</span>},
+    {Header: 'Failed',  accessor: 'failed',  maxWidth: 150, Cell: props => <span className={props.value == 0 ? ""  : "r"}>{props.value}</span>},
+    {Header: 'Errored', accessor: 'errored', maxWidth: 150, Cell: props => <span className={props.value == 0 ? ""  : "r"}>{props.value}</span>}
+];
+
+var testDataHeaders = [
+    {Header: 'Class',    accessor: 'testClass', maxWidth: 300},
+    {Header: 'Name',     accessor: 'testName',  maxWidth: 300},
+    {Header: 'Status',   accessor: 'status',    maxWidth: 150, Cell: props => <span className={props.value == 'Passed' ? "g" : (props.value == 'Skipped' ? "a" : "r")}>{props.value}</span>},
+    {Header: 'Duration', accessor: 'duration',  maxWidth: 150},
+];
 
 var propertiesHeaders = [
-    {key: 'name', label: 'Name'},
-    {key: 'value', label: 'Value'}
+    {Header: 'Name', accessor: 'name', maxWidth: 300},
+    {Header: 'Value', accessor: 'value'}
 ];
 
-var testHeaders = [
-    {key: 'testClass', label: 'Class'},
-    {key: 'testName', label: 'Name', cell: function(item){
-        return item.unsuccessfulMessage == null ? item.testName : <span>{item.testName}<br/>{item.unsuccessfulMessage}</span>;
-    }},
-    {key: 'status', label: 'Status', cell: function(item){
-        return <span className={item.status == 'Passed' ? "g" : (item.status == 'Skipped' ? "a" : "r")}>{item.status}</span>;
-    }},
-    {key: 'duration', label: 'Duration'}
-];
-                              
-var packageSummaryHeaders = [
-    {key: 'key', label: 'Package Name'},
-    {key: 'passed', label: 'Passed', cell: function (item) {
-        return <span className={item.passed == item.available ? "g" : "r"}>{item.passed}</span>;
-    }},
-    {key: 'skipped', label: 'Skipped', cell: function (item) {
-        return <span className={item.skipped == 0 ? "" : "r"}>{item.skipped}</span>;
-    }},
-    {key: 'failed', label: 'Failed', cell: function (item) {
-        return <span className={item.failed == 0 ? "" : "r"}>{item.failed}</span>;
-    }},
-    {key: 'errored', label: 'Errored', cell: function (item) {
-        return <span className={item.errored == 0 ? "" : "r"}>{item.errored}</span>;
-    }}
-];
-var classSummaryHeaders = [
-    {key: 'key', label: 'Class Name'},
-    {key: 'passed', label: 'Passed', cell: function (item) {
-        return <span className={item.passed == item.available ? "g" : "r"}>{item.passed}</span>;
-    }},
-    {key: 'skipped', label: 'Skipped', cell: function (item) {
-        return <span className={item.skipped == 0 ? "" : "r"}>{item.skipped}</span>;
-    }},
-    {key: 'failed', label: 'Failed', cell: function (item) {
-        return <span className={item.failed == 0 ? "" : "r"}>{item.failed}</span>;
-    }},
-    {key: 'errored', label: 'Errored', cell: function (item) {
-        return <span className={item.errored == 0 ? "" : "r"}>{item.errored}</span>;
-    }}
-];
+class TestDetails extends React.Component {
+    constructor(props) {
+        super(props);
+    }
+    render() {
+        return  this.props.value.stackTrace == null ? null : <pre>{this.props.value.stackTrace}</pre>;
+    }
+}
 
-var Tabs = React.createClass({
-    getInitialState: function() {
-        return {index: 0};
-    },
-    getDefaultProps: function () {
-        return {
-            titles: []
-        }
-    },
-    render: function() {
-        return (
-            <div className="tabPane">
+class Tabs extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            index: 0
+        };
+        this.switchTab = this.switchTab.bind(this);
+    }
+    render() {
+        return <div className="tabPane">
                 <div className="tabHeaders">{
                     this.props.titles.map((title, index) => 
                         <span key={index} className={index != this.state.index ? "tabTitle" : "tabTitle selectedTabTitle"}><a href="#" onClick={() => this.switchTab(index)}>{title}</a></span>
                     )}
                 </div><div className="tabContent">
                 {this.props.children[this.state.index]}
-            </div></div>
-        );
-    },
-    switchTab: function(newIndex) {
-      this.setState({index: newIndex});
+            </div></div>;
     }
-});
-
+    switchTab(newIndex) {
+        this.setState({index: newIndex});
+    }
+}
 
 ReactDOM.render(
-    <Tabs   
+    <span>
+        <h1>Test Results</h1>
+        <Tabs   
         titles={['Summary', 'Packages', 'Classs', 'Tests', 'TestSuite Properties', 'System Properties']}
     >
         <div className="totals">
@@ -105,11 +86,12 @@ ReactDOM.render(
                 <div>Success Rate: <span className={summary.passed == summary.executed ? "g" : "r"}>{100 * Number(summary.passed) / Number(summary.executed)}%</span></div>
             </span>
         </div>
-        <JsonTable rows={packageSummary} columns={packageSummaryHeaders} />
-        <JsonTable rows={classSummary} columns={classSummaryHeaders} />
-        <JsonTable rows={tests} columns={testHeaders} />
-        <JsonTable rows={testSuiteProps} columns={propertiesHeaders} />
-        <JsonTable rows={sysprops} columns={propertiesHeaders} />
-    </Tabs>, 
-        document.getElementById('results'));
-
+        <ReactTable data={packageSummary} columns={packageSummaryHeaders} />
+        <ReactTable data={classSummary} columns={classSummaryHeaders} />
+        <ReactTable data={tests} columns={testDataHeaders} SubComponent={(row) => {console.log(row); return <TestDetails value={row.original} />}} />
+        <ReactTable data={testSuiteProps} columns={propertiesHeaders} />
+        <ReactTable data={sysprops} columns={propertiesHeaders} />
+    </Tabs>
+    </span>,
+    document.getElementById('root')
+);

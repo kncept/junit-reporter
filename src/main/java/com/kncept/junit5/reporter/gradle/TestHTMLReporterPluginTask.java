@@ -8,7 +8,7 @@ import org.gradle.api.DefaultTask;
 import org.gradle.api.tasks.TaskAction;
 
 import com.kncept.junit5.reporter.domain.CssRagStatus;
-import com.kncept.junit5.reporter.html.TestHTMLReportProcessor;
+import com.kncept.junit5.reporter.html.TestReportProcessor;
 
 public class TestHTMLReporterPluginTask extends DefaultTask {
 	
@@ -34,7 +34,7 @@ public class TestHTMLReporterPluginTask extends DefaultTask {
 		File testResultsDir = new File(buildDir, settings.getTestResultsDir());
 		File testReportsDir = new File(buildDir, settings.getTestReportsDir());
 		
-		TestHTMLReportProcessor reportProcessor = new TestHTMLReportProcessor(
+		TestReportProcessor reportProcessor = new TestReportProcessor(
 				testResultsDir,
 				testReportsDir,
 				settings.isAggregated(),

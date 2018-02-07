@@ -23,7 +23,7 @@ import com.kncept.junit5.reporter.domain.TestCase;
 import com.kncept.junit5.reporter.domain.TestCaseStatus;
 import com.kncept.junit5.reporter.xml.XMLTestResults;
 
-public class TestHTMLReportWriter {
+public class TestReportWriter {
 	private final String category;
 	
 	//Going to assume that the system properties DO NOT CHANEG between tests.
@@ -32,7 +32,7 @@ public class TestHTMLReportWriter {
 	public LinkedHashMap<String, String> testsuiteProperties = new LinkedHashMap<>();
 	public List<TestCase> testcases = new ArrayList<>();
 	
-	public TestHTMLReportWriter(String category) {
+	public TestReportWriter(String category) {
 		this.category = category;
 	}
 	
@@ -115,10 +115,11 @@ public class TestHTMLReportWriter {
 				
 				if (next.getUnsuccessfulMessage() != null)
 					attrs.add(toJsMapValue("unsuccessfulMessage", next.getUnsuccessfulMessage()));
+				if (next.getStackTrace() != null)
+					attrs.add(toJsMapValue("stackTrace", next.getStackTrace()));
 				
-				//not ready yet. This should probably be in a "detail" view
-//				toJsMapArrayValue("systemOut", next.getSystemOut())
-//				toJsMapArrayValue("systemErr", next.getSystemErr())
+				attrs.add(toArrayValue("systemOut", next.getSystemOut()));
+				attrs.add(toArrayValue("systemErr", next.getSystemErr()));
 				
 				out.print(toJsMap(attrs.toArray(new String[attrs.size()])));
 				
@@ -274,9 +275,9 @@ public class TestHTMLReportWriter {
 		return value;
 	}
 	private String toJsMapValue(String key, String value) {
-		return "" + key + ": \"" + addDelimiters(value) + "\"";
+		return key + ": \"" + addDelimiters(value) + "\"";
 	}
-	private String toJsMapArrayValue(String key, List<String> values) {
+	private String toArrayValue(String key, List<String> values) {
 		StringBuilder sb = new StringBuilder("[ ");
 		for(int i = 0; i < values.size(); i++) {
 			if (i != 0)
@@ -284,7 +285,7 @@ public class TestHTMLReportWriter {
 			sb.append("\"" + addDelimiters(values.get(i)) + "\"");
 		}
 		sb.append("]");
-		return "" + key + ": \"" + sb.toString() + "\"";
+		return key + ": " + sb.toString();
 	}
 	//because of how JsonTable works, turn the map into a NVP array
 	private String toJsNvpArray(Map<String, String> stringMap) {

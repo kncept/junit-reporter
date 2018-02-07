@@ -1,22 +1,23 @@
 package com.kncept.junit5.reporter;
 
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-/*
- * This class can be used to generate a static file to test against.
- * It can't contain failing tests for the real build however, as that would fail the build.
- */
-public class J5T2Test {
+public class JUnit5DataGeneratorTest {
 
 	@Test
 	public void j5Stub() {
-		
 	}
 	
+	/*
+	 * JUnit 5 doesn't catch INPUT and OUTPUT the way that JUnit4 does.
+	 * This is a real shame... it would make test reporting soooo much nicer.
+	 */
 	@Test
 	public void sysout() {
 		System.out.println("sysout l1");
@@ -58,6 +59,20 @@ public class J5T2Test {
 	@Test
 	public void failingTest() {
 		fail("Failure Message passed into Assertions.fail");
+	}
+	
+	@Test
+	public void assertAllFailure() {
+		assertAll("assertAll header for TWO nested failures",
+				() -> fail("failure one"),
+				() -> assertTrue(true), //this bit wont fail
+				() -> assertTrue(false)
+		);
+	}
+	
+	@Test
+	public void multilineFailure() {
+		fail("Multiline\nfailure!");
 	}
 	
 	@Test

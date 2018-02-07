@@ -14,7 +14,7 @@ import com.kncept.junit5.reporter.domain.CssRagStatus;
 import com.kncept.junit5.reporter.xml.Junit4DomReader;
 import com.kncept.junit5.reporter.xml.XMLTestResults;
 
-public class TestHTMLReportProcessor {
+public class TestReportProcessor {
 	
 	//input directory
 	File testResultsDir;
@@ -47,7 +47,7 @@ public class TestHTMLReportProcessor {
 			System.out.println("  cssGreen");
 		}
 		
-		TestHTMLReportProcessor processor = new TestHTMLReportProcessor(
+		TestReportProcessor processor = new TestReportProcessor(
 				new File("."),
 				new File("."),
 				false,
@@ -73,7 +73,7 @@ public class TestHTMLReportProcessor {
 	}
 	
 	
-	public TestHTMLReportProcessor(
+	public TestReportProcessor(
 			File testResultsDir,
 			File testReportsDir,
 			boolean aggregatedReporting,
@@ -88,7 +88,7 @@ public class TestHTMLReportProcessor {
 	
 	
 	public void run() throws IOException {
-		TestHTMLReportWriter reporter =null;
+		TestReportWriter reporter =null;
 		
 		for(File file: testResultsDir.listFiles()) {
 			if (!file.isDirectory() && !aggregatedReporting)
@@ -101,7 +101,7 @@ public class TestHTMLReportProcessor {
 						if (isXmlTestFile(testFile)) {
 							XMLTestResults restResults = readFile(testFile);
 							if (reporter == null)
-								reporter = new TestHTMLReportWriter(aggregatedReporting ? null : file.getName());
+								reporter = new TestReportWriter(aggregatedReporting ? null : file.getName());
 							reporter.include(restResults);
 						}
 					}
@@ -110,7 +110,7 @@ public class TestHTMLReportProcessor {
 				} else if (isXmlTestFile(file) && aggregatedReporting) {
 					XMLTestResults restResults = readFile(file);
 					if (reporter == null)
-						reporter = new TestHTMLReportWriter(aggregatedReporting ? null : file.getName());
+						reporter = new TestReportWriter(aggregatedReporting ? null : file.getName());
 					reporter.include(restResults);
 				}
 		}

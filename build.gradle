@@ -6,10 +6,10 @@ buildscript {
     }
     dependencies {
     	//previously released version of junit-reporter
-    	classpath 'com.kncept.junit5.reporter:junit-reporter:1.0.2'
+    	classpath 'com.kncept.junit5.reporter:junit-reporter:1.0.3'
     
     	//Junit 5 plugin
-        classpath 'org.junit.platform:junit-platform-gradle-plugin:1.0.2'
+        classpath 'org.junit.platform:junit-platform-gradle-plugin:1.0.3'
         
         // https://github.com/srs/gradle-node-plugin/blob/master/docs/node.md
 		classpath 'com.moowork.gradle:gradle-node-plugin:1.2.0'
@@ -35,7 +35,7 @@ sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
 group = 'com.kncept.junit5.reporter'
-version = '1.0.3'
+version = '1.1.0-SNAPSHOT'
 
 //add generated source sets
 sourceSets {
@@ -112,7 +112,7 @@ testClasses.dependsOn generateTestData
 
 task reportOnTestData(type: JavaExec) {
     classpath = project.files(project.sourceSets.pretest.runtimeClasspath, project.sourceSets.main.runtimeClasspath)
-    main 'com.kncept.junit5.reporter.html.TestHTMLReportProcessor'
+    main 'com.kncept.junit5.reporter.html.TestReportProcessor'
     args 'testResultsDir=' + new File(project.projectDir, 'generatedsrc/test/resources/').absolutePath
     args 'testReportsDir=' + new File(project.projectDir, 'generatedsrc/test/resources/').absolutePath
     args 'aggregatedReporting=true'
@@ -147,7 +147,7 @@ jar.manifest {
 		'Built-Date': new Date().format("yyyy-MM-dd'T'HH:mm:ssZ"),
 		'Source-Compatibility': project.sourceCompatibility,
 		'Target-Compatibility': project.targetCompatibility,
-		'Main-Class': 'com.kncept.junit5.reporter.html.TestHTMLReportProcessor'
+		'Main-Class': 'com.kncept.junit5.reporter.html.TestReportProcessor'
 	)
 }
 
@@ -163,7 +163,7 @@ signArchives.onlyIf {new File('gradle.properties').exists()}
 
 task wrapper(type: Wrapper) {
 	description = 'gradlew'
-	gradleVersion = '4.3.1'
+	gradleVersion = '4.5.1'
 }
 
 repositories {
@@ -227,46 +227,14 @@ uploadArchives {
   }
 }
 
-//http://stackoverflow.com/questions/11209382/build-maven-plugins-using-gradle
-task pluginDescriptor( type: Exec ) {
-    commandLine 'mvn', '-e', '-B', 'org.apache.maven.plugins:maven-plugin-plugin:3.2:descriptor'
-    doFirst {
-        final File pom = project.file( 'pom.xml' )
-        install.repositories.mavenInstaller.pom.writeTo( pom )
-        assert pom.file, "[$pom.canonicalPath] was not created"
-
-        pom.text = pom.text.
-            replace( '<groupId>unknown</groupId>',             "<groupId>${project.group}</groupId>" ).
-            replace( '<artifactId>empty-project</artifactId>', "<artifactId>${project.name}</artifactId>" ).
-            replace( '<version>0</version>',                   """
-                                                              |<version>${version}</version>
-                                                              |  <packaging>maven-plugin</packaging>
-                                                              |  <build>
-                                                              |    <directory>\${project.basedir}/build</directory>
-                                                              |    <outputDirectory>\${project.build.directory}/classes/main</outputDirectory>
-                                                              |  </build>
-                                                              |""".stripMargin().trim())
-    }
-    doLast {
-        final  pluginDescriptor = new File(( File ) project.compileGroovy.destinationDir, 'META-INF/maven/plugin.xml' )
-        assert pluginDescriptor.file, "[$pluginDescriptor.canonicalPath] was not created"
-        println "Plugin descriptor file:$pluginDescriptor.canonicalPath is created successfully"
-    }
-}
-//project.compileGroovy.doLast{ pluginDescriptor.execute() }
-
 dependencies {
-    //Maven plugin dependencies
-    compile 'org.apache.maven:maven-plugin-api:3.3.9'
-    compile 'org.apache.maven.plugin-tools:maven-plugin-annotations:3.5'
-    
     //JUnit5 dependencies
-	testCompile 'org.junit.jupiter:junit-jupiter-api:5.0.2'
-	testRuntime 'org.junit.jupiter:junit-jupiter-engine:5.0.2'
+	testCompile 'org.junit.jupiter:junit-jupiter-api:5.0.3'
+	testRuntime 'org.junit.jupiter:junit-jupiter-engine:5.0.3'
 	
-	pretestCompile 'org.junit.jupiter:junit-jupiter-api:5.0.2'
-	pretestRuntime 'org.junit.jupiter:junit-jupiter-engine:5.0.2'
-	pretestRuntime 'org.junit.platform:junit-platform-gradle-plugin:1.0.2'
+	pretestCompile 'org.junit.jupiter:junit-jupiter-api:5.0.3'
+	pretestRuntime 'org.junit.jupiter:junit-jupiter-engine:5.0.3'
+	pretestRuntime 'org.junit.platform:junit-platform-gradle-plugin:1.0.3'
 }
 
 node {
