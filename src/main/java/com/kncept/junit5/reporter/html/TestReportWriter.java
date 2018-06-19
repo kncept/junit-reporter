@@ -333,7 +333,10 @@ public class TestReportWriter {
 	}
 	
 	public InputStream getTemplate(String templateName) {
-		return getClass().getClassLoader().getResourceAsStream("template/" + templateName);
+		InputStream in = getClass().getClassLoader().getResourceAsStream("template/" + templateName);
+		if (in == null)
+			throw new NullPointerException("Unable to load resource template/" + templateName);
+		return in;
 	}
 	
 	

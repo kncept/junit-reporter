@@ -8,7 +8,7 @@ Add or merge this to the top of your buildscript libraries via the mavenCentral 
             mavenCentral()
         }
         dependencies {
-            classpath 'com.kncept.junit5.reporter:junit-reporter:1.1.0'
+            classpath 'com.kncept.junit5.reporter:junit-reporter:1.2.0'
         }
     }
 
@@ -54,11 +54,12 @@ Command line support has been built.<br/>
 The jar file is executable, and the options have the same names as in the gradle config block.<br/>
 The main class name is com.kncept.junit5.reporter.html.TestReportProcessor.<br/>
 Options use a simple equals sign.<br/>
- eg: `java -jar junit-reporter-1.1.0 aggregated=true` to process reports in the current dir
+ eg: `java -jar junit-reporter-1.2.0 aggregated=true` to process reports in the current dir
 
 ## Final Thoughts
 
-It seems a few people use this. Glad to help. It does take effort to keep things ticking along though.<br />
+It seems a few people use this. Glad to help. It does take some effort to keep things ticking along though.<br/>
+<br/>
 Donations accepted: <br/>
 ETH: 5db8a572ba967f5611740fba29957be46a58cdef <br/>
 BTC: 1EnoXwWabBzeSWyRYU775PKqLLKp49Vub1 <br/>

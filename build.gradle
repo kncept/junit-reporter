@@ -6,10 +6,7 @@ buildscript {
     }
     dependencies {
     	//previously released version of junit-reporter
-    	classpath 'com.kncept.junit5.reporter:junit-reporter:1.0.3'
-    
-    	//Junit 5 plugin
-        classpath 'org.junit.platform:junit-platform-gradle-plugin:1.0.3'
+    	classpath 'com.kncept.junit5.reporter:junit-reporter:1.1.0'
         
         // https://github.com/srs/gradle-node-plugin/blob/master/docs/node.md
 		classpath 'com.moowork.gradle:gradle-node-plugin:1.2.0'
@@ -23,8 +20,7 @@ plugins {
 
 apply plugin: 'eclipse'
 apply plugin: 'idea'
- 
-apply plugin: 'org.junit.platform.gradle.plugin'
+
 apply plugin: 'com.kncept.junit5.reporter'
 apply plugin: 'com.moowork.node'
 
@@ -35,26 +31,22 @@ sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
 group = 'com.kncept.junit5.reporter'
-version = '1.1.0'
+version = '1.2.0'
+
+def jUnit5Version = "5.2.0"
 
 //add generated source sets
 sourceSets {
 	// javascript
 	main {
-	    resources {
-	        srcDir 'generatedsrc/main/resources'
-	    }
+	    resources.srcDirs += 'generatedsrc/main/resources'
 	}
 	//JUnit5
 	test {
-	    resources {
-	        srcDir 'generatedsrc/test/resources'
-	    }
+	    resources.srcDirs += 'generatedsrc/test/resources'
 	}
 	pretest {
-		java {
-			srcDir 'src/pretest/java'
-		}
+		java.srcDirs += 'src/pretest/java'
 	}
 }
 task initGeneratedDirectories {
@@ -80,49 +72,53 @@ def recursivelyDeleteFile(file) {
 	file.delete()
 }
 
-junitPlatform {
-	filters {
-		tags {
-			exclude 'test-data'
-		}
+test {
+	useJUnitPlatform {
+		excludeTags 'test-data'
 	}
 }
 
 task compilePretest (type: JavaCompile) {
 	source = sourceSets.pretest.java.srcDirs
-	classpath = project.files(project.sourceSets.test.compileClasspath, project.sourceSets.pretest.compileClasspath)
+	classpath = project.sourceSets.pretest.compileClasspath
 	destinationDir = sourceSets.pretest.output.classesDir
 }
+compilePretest.dependsOn compileJava
 
 // based on
 // https://github.com/junit-team/junit5/issues/700#issuecomment-283374073
 // http://junit.org/junit5/docs/current/user-guide/#running-tests-console-launcher
 task generateTestData(type: JavaExec) {
     classpath = project.sourceSets.pretest.runtimeClasspath
-    //classpath = project.files(project.sourceSets.test.runtimeClasspath, project.sourceSets.pretest.runtimeClasspath)
     main 'org.junit.platform.console.ConsoleLauncher'
     args '--scan-class-path'
     args '--reports-dir=' + new File(project.projectDir, 'generatedsrc/test/resources/').absolutePath
-    //args '--include-tag=test-data'
     ignoreExitValue true
 }
 generateTestData.dependsOn compilePretest
 generateTestData.dependsOn initGeneratedDirectories
-testClasses.dependsOn generateTestData
+test.dependsOn generateTestData
 
 task reportOnTestData(type: JavaExec) {
-    classpath = project.files(project.sourceSets.pretest.runtimeClasspath, project.sourceSets.main.runtimeClasspath)
+    classpath = project.sourceSets.main.runtimeClasspath
     main 'com.kncept.junit5.reporter.html.TestReportProcessor'
     args 'testResultsDir=' + new File(project.projectDir, 'generatedsrc/test/resources/').absolutePath
     args 'testReportsDir=' + new File(project.projectDir, 'generatedsrc/test/resources/').absolutePath
     args 'aggregatedReporting=true'
 }
-reportOnTestData.dependsOn generateTestData
+reportOnTestData.dependsOn generateTestData 
 testClasses.dependsOn reportOnTestData
 
 task javadocJar(type: Jar) {
     classifier = 'javadoc'
     from javadoc
+}
+
+javadoc {
+	//html5 isn't there yet in 1.8
+	if (!System.getProperty("java.version").startsWith("1.8.")) {
+		options.addBooleanOption('html5', true)
+	}
 }
 
 task sourcesJar(type: Jar) {
@@ -135,21 +131,23 @@ task testSourcesJar(type: Jar) {
     from sourceSets.test.allSource
 }
 
-jar.manifest {
-	attributes(
-		'Implementation-Title': project.name,
-		'Implementation-Vendor' : 'kncept',
-		'Implementation-Version': project.version,
-		'Implementation-Author': 'Nicholas Krul', //non standard
-		'Created-By': System.getProperty('java.version'),
-		'Built-By': System.getProperty('user.name'),
-		//'Built-Host': getHostname(),
-		'Built-Date': new Date().format("yyyy-MM-dd'T'HH:mm:ssZ"),
-		'Source-Compatibility': project.sourceCompatibility,
-		'Target-Compatibility': project.targetCompatibility,
-		'Main-Class': 'com.kncept.junit5.reporter.html.TestReportProcessor'
-	)
+jar {
+	manifest {
+		attributes(
+			'Implementation-Title': project.name,
+			'Implementation-Vendor' : 'kncept',
+			'Implementation-Version': project.version,
+			'Implementation-Author': 'Nicholas Krul', //non standard
+			'Created-By': System.getProperty('java.version'),
+			'Built-By': System.getProperty('user.name'),
+			'Built-Date': new Date().format("yyyy-MM-dd'T'HH:mm:ssZ"),
+			'Source-Compatibility': project.sourceCompatibility,
+			'Target-Compatibility': project.targetCompatibility,
+			'Main-Class': 'com.kncept.junit5.reporter.html.TestReportProcessor'
+		)
+	}
 }
+
 
 artifacts {
     archives javadocJar, sourcesJar, testSourcesJar
@@ -163,7 +161,7 @@ signArchives.onlyIf {new File('gradle.properties').exists()}
 
 task wrapper(type: Wrapper) {
 	description = 'gradlew'
-	gradleVersion = '4.5.1'
+	gradleVersion = '4.8'
 }
 
 repositories {
@@ -229,15 +227,21 @@ uploadArchives {
 
 dependencies {
     //JUnit5 dependencies
-	testCompile 'org.junit.jupiter:junit-jupiter-api:5.0.3'
-	testRuntime 'org.junit.jupiter:junit-jupiter-engine:5.0.3'
+	testCompile "org.junit.jupiter:junit-jupiter-api:${jUnit5Version}"
+	testRuntime "org.junit.jupiter:junit-jupiter-engine:${jUnit5Version}"
 	
-	pretestCompile 'org.junit.jupiter:junit-jupiter-api:5.0.3'
-	pretestRuntime 'org.junit.jupiter:junit-jupiter-engine:5.0.3'
-	pretestRuntime 'org.junit.platform:junit-platform-gradle-plugin:1.0.3'
+	pretestCompile "org.junit.jupiter:junit-jupiter-api:${jUnit5Version}"
+	pretestRuntime "org.junit.jupiter:junit-jupiter-engine:${jUnit5Version}"
+	pretestRuntime "org.junit.platform:junit-platform-console:1.2.0"
 }
 
 node {
+	// Version of node to use.
+	version = '6.9.1'
+
+	// Version of npm to use.
+	npmVersion = '5.10.0'
+  
 	//download a version to use.
 	//otherwise this will use npm from the system PATH
 	download = true
@@ -248,6 +252,8 @@ task npmBuild(type: NpmTask) {
 }
 npmBuild.dependsOn initGeneratedDirectories
 npmBuild.dependsOn npmInstall
-compileJava.dependsOn npmBuild
+processResources.dependsOn npmBuild
+//compileJava.dependsOn processResources
+
 //clean.dependsOn npm_cache_clean
 clean.dependsOn cleanGeneratedDirectories
