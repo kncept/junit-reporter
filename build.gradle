@@ -6,7 +6,7 @@ buildscript {
     }
     dependencies {
     	//previously released version of junit-reporter
-    	classpath 'com.kncept.junit5.reporter:junit-reporter:1.1.0'
+    	classpath 'com.kncept.junit5.reporter:junit-reporter:1.2.0'
         
         // https://github.com/srs/gradle-node-plugin/blob/master/docs/node.md
 		classpath 'com.moowork.gradle:gradle-node-plugin:1.2.0'
@@ -31,7 +31,7 @@ sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
 group = 'com.kncept.junit5.reporter'
-version = '1.2.0'
+version = '1.2.1-SNAPSHOT'
 
 def jUnit5Version = "5.2.0"
 

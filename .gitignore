@@ -22,3 +22,4 @@ secring.gpg
 
 #NPM and NodeJS stuff
 node_modules
+package-lock.json

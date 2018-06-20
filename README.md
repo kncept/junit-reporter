@@ -24,6 +24,9 @@ If you want more fine grained control, add it as a finalizer to another task. eg
 And you're done!<br/>
 Reports are generated into the gradle 'reports' directory. <br/>
 eg: junit-reporter/build/reports/tests/junit-platform/index.html<br/>
+<br/>
+Please be aware that the plugin may take a few hours to become available after release.<br/>
+<br/>
 
 ## Configuration options
 If you need to do any customisation (aggregation, or you just don't like red...), Its possible to customise.
