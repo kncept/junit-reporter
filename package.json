@@ -4,17 +4,31 @@
 	"license": "EPL-1.0",
 	"repository": "https://github.com/kncept/junit-reporter.git",
 	"dependencies": {
-		"webpack": "3.10.0",
-		"buble-loader": "0.4.1",
-		"style-loader": "0.20.1",
-		"css-loader": "0.28.9",
-		"react": "16.2.0",
-		"react-dom": "16.2.0",
-		"react-table": "6.7.6"
+		"react": "16.4.1",
+		"react-dom": "16.4.1",
+		"react-table": "6.8.2"
 	},
 	"scripts": {
 		"build": "webpack -p",
 		"buildProd": "webpack -p",
 		"buildDev": "webpack"
+	},
+	"devDependencies": {
+		"babel-core": "^6.26.3",
+		"babel-loader": "^7.1.5",
+		"babel-preset-env": "^1.7.0",
+		"babel-preset-react": "^6.24.1",
+		"babel-preset-stage-2": "^6.24.1",
+		"style-loader": "0.21.0",
+		"css-loader": "1.0.0",
+		"webpack": "4.16.2",
+		"webpack-cli": "3.1.0"
+	},
+	"babel": {
+		"presets": [
+			"env",
+			"react",
+			"stage-2"
+		]
 	}
 }
