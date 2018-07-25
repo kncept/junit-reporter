@@ -1,6 +1,6 @@
 package com.kncept.junit5.reporter.html;
 
-import static com.kncept.junit5.reporter.html.TestReportProcessor.isXmlTestFile;
+import static com.kncept.junit5.reporter.html.TestReportProcessor.xmlTestFile;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -16,12 +16,12 @@ public class TestHTMLReportProcessorTest {
 	public void xmlFileTesterIsValid() throws IOException {
 		File validTestFile = File.createTempFile("TEST-", ".xml");
 		File inalidTestFile = File.createTempFile("non-", ".xml");
-		assertTrue(isXmlTestFile(validTestFile));
-		assertFalse(isXmlTestFile(inalidTestFile));
+		assertTrue(xmlTestFile(validTestFile));
+		assertFalse(xmlTestFile(inalidTestFile));
 		validTestFile.delete();
 		validTestFile.mkdir();
 		//now its INVALID because its a directory (not really defined...)
-		assertFalse(isXmlTestFile(inalidTestFile));
+		assertFalse(xmlTestFile(inalidTestFile));
 		
 	}
 }

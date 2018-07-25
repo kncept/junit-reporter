@@ -20,7 +20,7 @@ public class TestResultsXMLReaderTest {
 
 	@Test
 	public void canReadProperties() throws Exception {
-		XMLTestResults testResults = testResults();
+		TestSuite testResults = testResults();
 		assertNotNull(testResults.systemProperties());
 		assertFalse(testResults.systemProperties().isEmpty());
 		for(String key: testResults.systemProperties().keySet()) {
@@ -30,14 +30,14 @@ public class TestResultsXMLReaderTest {
 	
 	@Test
 	public void canReadTestCases() throws Exception {
-		XMLTestResults testResults = testResults();
+		TestSuite testResults = testResults();
 		assertNotNull(testResults.testcases());
 		assertFalse(testResults.testcases().isEmpty());
 	}
 	
 	@Test
 	public void canReadMultilineOutput() throws Exception {
-		XMLTestResults testResults = testResults();
+		TestSuite testResults = testResults();
 		List<String> sysout = testResults.testcases().get(0).getSystemOut();
 		assertTrue(sysout.size() > 1, "Must contain more than 1 line of output");
 	}
@@ -68,15 +68,15 @@ public class TestResultsXMLReaderTest {
 	}
 	
 	private TestCase testCase(String name) throws Exception {
-		XMLTestResults testResults = testResults();
+		TestSuite testResults = testResults();
 		for(TestCase testCase: testResults.testcases())
 			if (testCase.getName().equals(name))
 				return testCase;
 		throw new RuntimeException("Unable to find a testcase with name " + name);
 	}
-	private XMLTestResults testResults() throws Exception {
+	private TestSuite testResults() throws Exception {
 		InputStream in = getClass().getClassLoader().getResourceAsStream("TEST-junit-jupiter.xml");
-		return new Junit4DomReader(in);
+		return new Junit4DomReader("junit-jupiter", in);
 	}
 
 }

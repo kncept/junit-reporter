@@ -8,12 +8,17 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.List;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import com.kncept.junit5.reporter.domain.CssRagStatus;
 import com.kncept.junit5.reporter.domain.TestCase;
+import com.kncept.junit5.reporter.xml.TestSuite;
 
 public class TestHTMLReportWriterTest {
 	private int counter = 0;
@@ -39,21 +44,12 @@ public class TestHTMLReportWriterTest {
 		File htmlDir = createTempDirectory(null).toFile();
 		TestReportWriter writer = new TestReportWriter("junit-platform");
 
-		writer.include(generateTestCase());
-		writer.include(generateTestCase());
-		writer.include(generateTestCase());
+		writer.include(new TestTestSuite());
+		writer.include(new TestTestSuite());
 
 		writer.write(htmlDir, new CssRagStatus());
 	}
-	
-	@Test
-	public void canDelimitStringCorrectly() {
-		TestReportWriter writer = new TestReportWriter("");
-		assertEquals("\\\\", writer.addDelimiters("\\"));
-		assertEquals("\\\"", writer.addDelimiters("\""));
-		assertEquals("\\n", writer.addDelimiters("\n"));
-		assertEquals("\\t", writer.addDelimiters("\t"));
-	}
+
 	
 	private TestCase generateTestCase() {
 		TestCase testcase = new TestCase(
@@ -63,7 +59,49 @@ public class TestHTMLReportWriterTest {
 				Passed);
 		counter++;
 		return testcase;
+	}
+	
+	class TestTestSuite implements TestSuite {
+		private final String name;
+		private List<TestCase> testcases;
 		
+		public TestTestSuite() {
+			name = "testSuite" + counter++;
+			testcases = new ArrayList<>();
+			testcases.add(generateTestCase());
+			testcases.add(generateTestCase());
+			testcases.add(generateTestCase());
+		}
+		
+		@Override
+		public String name() {
+			return name;
+		}
+		
+		@Override
+		public List<String> sysErr() {
+			return Collections.emptyList();
+		}
+		
+		@Override
+		public List<String> sysOut() {
+			return Collections.emptyList();
+		}
+		
+		@Override
+		public LinkedHashMap<String, String> systemProperties() {
+			return new LinkedHashMap<>();
+		}
+		
+		@Override
+		public LinkedHashMap<String, String> testsuiteProperties() {
+			return new LinkedHashMap<>();
+		}
+		
+		@Override
+		public List<TestCase> testcases() {
+			return testcases;
+		}
 	}
 
 }

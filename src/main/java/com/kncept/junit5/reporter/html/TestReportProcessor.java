@@ -12,7 +12,7 @@ import org.xml.sax.SAXException;
 
 import com.kncept.junit5.reporter.domain.CssRagStatus;
 import com.kncept.junit5.reporter.xml.Junit4DomReader;
-import com.kncept.junit5.reporter.xml.XMLTestResults;
+import com.kncept.junit5.reporter.xml.TestSuite;
 
 public class TestReportProcessor {
 	
@@ -98,8 +98,8 @@ public class TestReportProcessor {
 			
 				if (file.isDirectory()) {
 					for(File testFile: file.listFiles()) {
-						if (isXmlTestFile(testFile)) {
-							XMLTestResults restResults = readFile(testFile);
+						if (xmlTestFile(testFile)) {
+							TestSuite restResults = readFile(testFile);
 							if (reporter == null)
 								reporter = new TestReportWriter(aggregatedReporting ? null : file.getName());
 							reporter.include(restResults);
@@ -107,8 +107,8 @@ public class TestReportProcessor {
 					}
 					if (reporter != null && !aggregatedReporting)
 						reporter.write(testReportsDir, cssRagStatus);
-				} else if (isXmlTestFile(file) && aggregatedReporting) {
-					XMLTestResults restResults = readFile(file);
+				} else if (xmlTestFile(file) && aggregatedReporting) {
+					TestSuite restResults = readFile(file);
 					if (reporter == null)
 						reporter = new TestReportWriter(aggregatedReporting ? null : file.getName());
 					reporter.include(restResults);
@@ -132,15 +132,21 @@ public class TestReportProcessor {
 		}
 	}
 	
-	public static boolean isXmlTestFile(File file) {
+	public static boolean xmlTestFile(File file) {
 		return file.isFile() && 
 				file.getName().startsWith("TEST-") && 
 				file.getName().endsWith(".xml");
 	}
 	
-	private XMLTestResults readFile(File file) throws IOException {
+	public static String testCaseName(File file) {
+		if (xmlTestFile(file))
+			return file.getName().substring(5, file.getName().length() - 4);
+		throw new UnsupportedOperationException("Unable to determine test case name from file " + file.getName());
+	}
+	
+	private TestSuite readFile(File file) throws IOException {
 		try (InputStream in = new FileInputStream(file)) {
-			return new Junit4DomReader(in);
+			return new Junit4DomReader(testCaseName(file), in);
 		} catch (ParserConfigurationException e) {
 			throw new RuntimeException(e);
 		} catch (SAXException e) {

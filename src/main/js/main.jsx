@@ -4,7 +4,7 @@ const ReactDOM = require('react-dom');
 import ReactTable from 'react-table';
 import 'react-table/react-table.css';
 
-var packageSummaryHeaders = [
+const packageSummaryHeaders = [
     {Header: 'Package',  accessor: 'key',      width: 400},
     {Header: 'Passed',   accessor: 'passed',   width: 100, Cell: props => <span className={props.value == 0 ? "r" : "g"}>{props.value}</span>},
     {Header: 'Skipped',  accessor: 'skipped',  width: 100, Cell: props => <span className={props.value == 0 ? ""  : "r"}>{props.value}</span>},
@@ -13,7 +13,7 @@ var packageSummaryHeaders = [
     {Header: 'Duration', accessor: 'duration', width: 100}
 ];
 
-var classSummaryHeaders = [
+const classSummaryHeaders = [
     {Header: 'Class',    accessor: 'key',      width: 400},
     {Header: 'Passed',   accessor: 'passed',   width: 100, Cell: props => <span className={props.value == 0 ? "r" : "g"}>{props.value}</span>},
     {Header: 'Skipped',  accessor: 'skipped',  width: 100, Cell: props => <span className={props.value == 0 ? ""  : "r"}>{props.value}</span>},
@@ -22,16 +22,22 @@ var classSummaryHeaders = [
     {Header: 'Duration', accessor: 'duration', width: 100}
 ];
 
-var testDataHeaders = [
+const testDataHeaders = [
     {Header: 'Class',    accessor: 'testClass', width: 400},
     {Header: 'Name',     accessor: 'testName',  width: 400},
     {Header: 'Status',   accessor: 'status',    width: 100, Cell: props => <span className={props.value == 'Passed' ? "g" : (props.value == 'Skipped' ? "a" : "r")}>{props.value}</span>},
     {Header: 'Duration', accessor: 'duration',  width: 100},
 ];
 
-var propertiesHeaders = [
+const testSuitesHeader = [
     {Header: 'Name',  accessor: 'name', width: 400},
-    {Header: 'Value', accessor: 'value'}
+    {Header: 'Tests Run', accessor: 'totals.executed', width: 100},
+    {Header: 'Tests Skipped', accessor: 'totals.skipped', width: 100}
+];
+
+const nvpHeader = [
+    {Header: 'Name',  accessor: 'name', width: 400},
+    {Header: 'Value',  accessor: 'value', width: 400}
 ];
 
 //some "nice" pagination size options.
@@ -108,29 +114,30 @@ ReactDOM.render(
     <span>
         <h1>Test Results</h1>
         <Tabs   
-        titles={['Summary', 'Packages', 'Classs', 'Tests', 'TestSuite Properties', 'System Properties']}
+        titles={['Summary', 'Packages', 'Classs', 'Tests', 'Test Suites', 'System Properties', 'Environment Properties']}
     >
         <div className="totals">
             <span className="mainSummary">
                 <table>
                     <tbody>
-                        <tr><td>timestamp:</td><td>{summary.timestamp}</td></tr>
-                        <tr><td>duration:</td><td>{summary.duration}</td></tr>
-                        <tr><td>passed:</td><td className={summary.passed == summary.executed ? "g" : "r"}>{summary.passed}</td></tr>
-                        <tr><td>skipped:</td><td className={summary.skipped == 0 ? "" : "a"}>{summary.skipped}</td></tr>
-                        <tr><td>failed:</td><td className={summary.failed == 0 ? "" : "r"}>{summary.failed}</td></tr>
-                        <tr><td>errored:</td><td className={summary.errored == 0 ? "" : "r"}>{summary.errored}</td></tr>
+                        <tr><td>timestamp:</td><td>{totals.timestamp}</td></tr>
+                        <tr><td>duration:</td><td>{totals.duration}</td></tr>
+                        <tr><td>passed:</td><td className={totals.passed == totals.executed ? "g" : "r"}>{totals.passed}</td></tr>
+                        <tr><td>skipped:</td><td className={totals.skipped == 0 ? "" : "a"}>{totals.skipped}</td></tr>
+                        <tr><td>failed:</td><td className={totals.failed == 0 ? "" : "r"}>{totals.failed}</td></tr>
+                        <tr><td>errored:</td><td className={totals.errored == 0 ? "" : "r"}>{totals.errored}</td></tr>
                     </tbody>
                 </table>
             </span><span className="totalPercent">
-                <div>Success Rate: <span className={summary.passed == summary.executed ? "g" : "r"}>{100 * Number(summary.passed) / Number(summary.executed)}%</span></div>
+                <div>Success Rate: <span className={totals.passed == totals.executed ? "g" : "r"}>{Math.round(10000 * Number(totals.passed) / Number(totals.executed)) / 100}%</span></div>
             </span>
         </div>
-        <OptionedReactTable data={packageSummary} columns={packageSummaryHeaders} />
-        <OptionedReactTable data={classSummary}   columns={classSummaryHeaders} />
-        <OptionedReactTable data={tests}          columns={testDataHeaders} SubComponent={(row) => {return row.original.stackTrace == null ? null : <pre>{row.original.stackTrace}</pre>}} />
-        <OptionedReactTable data={testSuiteProps} columns={propertiesHeaders} />
-        <OptionedReactTable data={sysprops}       columns={propertiesHeaders} SubComponent={(row) => {return <pre>{row.original.value}</pre>}} />
+        <OptionedReactTable data={packageTotals} columns={packageSummaryHeaders} />
+        <OptionedReactTable data={classTotals}   columns={classSummaryHeaders} />
+        <OptionedReactTable data={tests}         columns={testDataHeaders} SubComponent={(row) => {return row.original.stackTrace == null ? null : <pre>{row.original.stackTrace}</pre>}} />
+        <OptionedReactTable data={testSuites}    columns={testSuitesHeader} />
+        <OptionedReactTable data={buildTimeSystemProperties} columns={nvpHeader} />
+        <OptionedReactTable data={buildTimeEnvironmentProperties} columns={nvpHeader} />
     </Tabs>
     </span>,
     document.getElementById('root')

@@ -27,13 +27,17 @@ import org.xml.sax.SAXException;
 import com.kncept.junit5.reporter.domain.TestCase;
 import com.kncept.junit5.reporter.domain.TestCaseStatus;
 
-public class Junit4DomReader implements XMLTestResults {
+public class Junit4DomReader implements TestSuite {
 	
-	private LinkedHashMap<String, String> systemProperties = new LinkedHashMap<>();
-	private LinkedHashMap<String, String> testsuiteProperties = new LinkedHashMap<>();
-	private List<TestCase> testcases = new ArrayList<>();
+	private final String testResultSetName;
+	private final LinkedHashMap<String, String> systemProperties = new LinkedHashMap<>();
+	private final LinkedHashMap<String, String> testsuiteProperties = new LinkedHashMap<>();
+	private final List<TestCase> testcases = new ArrayList<>();
+	private final List<String> sysOut = new ArrayList<>();
+	private final List<String> sysErr = new ArrayList<>();
 	
-	public Junit4DomReader(InputStream in) throws ParserConfigurationException, SAXException, IOException {
+	public Junit4DomReader(String testResultSetName, InputStream in) throws ParserConfigurationException, SAXException, IOException {
+		this.testResultSetName = testResultSetName;
 		DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
 		Document doc = builder.parse(in);
 		
@@ -49,6 +53,9 @@ public class Junit4DomReader implements XMLTestResults {
 			Node node = nl.item(i);
 			systemProperties.put(attr(node, "name"), attr(node, "value"));
 		}
+		
+		sysOut().addAll(handleTextNode(child(doc.getDocumentElement(), "system-out")));
+		sysErr().addAll(handleTextNode(child(doc.getDocumentElement(), "system-err")));
 		
 		nl = doc.getElementsByTagName("testcase");
 		for(int i = 0; i < nl.getLength(); i++) {
@@ -95,12 +102,12 @@ public class Junit4DomReader implements XMLTestResults {
 					attr(node, "classname"), 
 					new BigDecimal(attr(node, "time")),
 					status);
-			testcases.add(testCase);
 			
 			testCase.setUnsuccessfulMessage(unsuccessfulMessage);
 			testCase.setStackTrace(stackTrace);
 			testCase.getSystemOut().addAll(handleTextNode(child(node, "system-out")));
 			testCase.getSystemErr().addAll(handleTextNode(child(node, "system-err")));
+			testcases.add(testCase);
 		}
 		
 	}
@@ -142,16 +149,34 @@ public class Junit4DomReader implements XMLTestResults {
 		return lines;
 	}
 	
+	@Override
+	public String name() {
+		return testResultSetName;
+	}
+	
+	@Override
 	public LinkedHashMap<String, String> systemProperties() {
 		return systemProperties;
 	}
 	
+	@Override
 	public LinkedHashMap<String, String> testsuiteProperties() {
 		return testsuiteProperties;
 	}
 	
+	@Override
 	public List<TestCase> testcases() {
 		return testcases;
+	}
+	
+	@Override
+	public List<String> sysOut() {
+		return sysOut;
+	}
+	
+	@Override
+	public List<String> sysErr() {
+		return sysErr;
 	}
 	
 }
