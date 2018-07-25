@@ -1,3 +1,10 @@
+//
+// Useful gradle targets:
+//  gradlew install  -->>  install to local maven repo
+//  gradlew uploadArchives  -->>  upload to sonatype OSS Staging repo
+//  gradlew check  -->>  Performs standard testing
+//  gradlew wrapper -->> re run the gradle wrapper script 
+
 buildscript {
     repositories {
         mavenLocal()
@@ -31,13 +38,13 @@ sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
 group = 'com.kncept.junit5.reporter'
-version = '1.2.1-SNAPSHOT'
+version = '1.3.0'
 
 def jUnit5Version = "5.2.0"
 
 //add generated source sets
 sourceSets {
-	// javascript
+	// javascript output directory
 	main {
 	    resources.srcDirs += 'generatedsrc/main/resources'
 	}
@@ -159,9 +166,8 @@ signing {
 }
 signArchives.onlyIf {new File('gradle.properties').exists()}
 
-task wrapper(type: Wrapper) {
-	description = 'gradlew'
-	gradleVersion = '4.8'
+wrapper {
+	gradleVersion = '4.9'
 }
 
 repositories {
