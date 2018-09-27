@@ -28,7 +28,7 @@ plugins {
 apply plugin: 'eclipse'
 apply plugin: 'idea'
 
-apply plugin: 'com.kncept.junit5.reporter'
+apply plugin: 'com.kncept.junit5.reporter' //old reporter. TODO: update to v2.0 on subsequent releases
 apply plugin: 'com.moowork.node'
 
 apply plugin: 'maven'
@@ -37,8 +37,8 @@ apply plugin: 'signing'
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
-group = 'com.kncept.junit5.reporter'
-version = '1.3.0'
+group = 'com.kncept.junit.reporter'
+version = '2.0.0'
 
 def jUnit5Version = "5.2.0"
 
@@ -108,7 +108,7 @@ test.dependsOn generateTestData
 
 task reportOnTestData(type: JavaExec) {
     classpath = project.sourceSets.main.runtimeClasspath
-    main 'com.kncept.junit5.reporter.html.TestReportProcessor'
+    main 'com.kncept.junit.reporter.html.TestReportProcessor'
     args 'testResultsDir=' + new File(project.projectDir, 'generatedsrc/test/resources/').absolutePath
     args 'testReportsDir=' + new File(project.projectDir, 'generatedsrc/test/resources/').absolutePath
     args 'aggregatedReporting=true'
@@ -150,7 +150,7 @@ jar {
 			'Built-Date': new Date().format("yyyy-MM-dd'T'HH:mm:ssZ"),
 			'Source-Compatibility': project.sourceCompatibility,
 			'Target-Compatibility': project.targetCompatibility,
-			'Main-Class': 'com.kncept.junit5.reporter.html.TestReportProcessor'
+			'Main-Class': 'com.kncept.junit.reporter.html.TestReportProcessor'
 		)
 	}
 }
@@ -167,7 +167,7 @@ signing {
 signArchives.onlyIf {new File('gradle.properties').exists()}
 
 wrapper {
-	gradleVersion = '4.9'
+	gradleVersion = '4.10'
 }
 
 repositories {
