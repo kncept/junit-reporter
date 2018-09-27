@@ -1,4 +1,4 @@
-package com.kncept.junit.reporter.html;
+package com.kncept.junit.reporter;
 
 import static com.kncept.junit.reporter.json.JsonUtils.toJsMap;
 import static com.kncept.junit.reporter.json.JsonUtils.toJsMapValue;
@@ -8,15 +8,17 @@ import java.math.BigDecimal;
 import com.kncept.junit.reporter.domain.TestCase;
 
 public class SummaryBucket {
-	private final String key;
-	private int passed;
-	private int skipped;
-	private int failed;
-	private int errored;
-	private BigDecimal duration = BigDecimal.ZERO;
+	public final String key;
+	public int passed;
+	public int skipped;
+	public int failed;
+	public int errored;
+	public BigDecimal duration = BigDecimal.ZERO;
+	
 	public SummaryBucket(String key) {
 		this.key = key;
 	}
+	
 	public void include(TestCase test) {
 		switch(test.getStatus()) {
 		case Passed:
@@ -33,6 +35,14 @@ public class SummaryBucket {
 			break;
 		}
 		duration = duration.add(test.getDuration());
+	}
+	
+	public void include(SummaryBucket bucket) {
+		passed += bucket.passed;
+		skipped += bucket.skipped;
+		failed += bucket.failed;
+		errored += bucket.errored;
+		duration = duration.add(bucket.duration);
 	}
 	
 	public String toString() {

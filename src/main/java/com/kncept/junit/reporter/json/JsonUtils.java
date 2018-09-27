@@ -34,7 +34,7 @@ public final class JsonUtils {
 		return key + ": \"" + addDelimiters(value) + "\"";
 	}
 	
-	public static String toArrayValue(String key, List<String> values) {
+	public static String toJsMapArrayValue(String key, List<String> values) {
 		StringBuilder sb = new StringBuilder("[ ");
 		for(int i = 0; i < values.size(); i++) {
 			if (i != 0)

@@ -110,10 +110,9 @@ test.dependsOn generateTestData
 
 task reportOnTestData(type: JavaExec) {
     classpath = project.sourceSets.main.runtimeClasspath
-    main 'com.kncept.junit.reporter.html.TestReportProcessor'
+    main 'com.kncept.junit.reporter.TestReportProcessor'
     args 'testResultsDir=' + new File(project.projectDir, 'generatedsrc/test/resources/').absolutePath
     args 'testReportsDir=' + new File(project.projectDir, 'generatedsrc/test/resources/').absolutePath
-    args 'aggregatedReporting=true'
 }
 reportOnTestData.dependsOn generateTestData 
 testClasses.dependsOn reportOnTestData
@@ -152,7 +151,7 @@ jar {
 			'Built-Date': new Date().format("yyyy-MM-dd'T'HH:mm:ssZ"),
 			'Source-Compatibility': project.sourceCompatibility,
 			'Target-Compatibility': project.targetCompatibility,
-			'Main-Class': 'com.kncept.junit.reporter.html.TestReportProcessor'
+			'Main-Class': 'com.kncept.junit.reporter.TestReportProcessor'
 		)
 	}
 }

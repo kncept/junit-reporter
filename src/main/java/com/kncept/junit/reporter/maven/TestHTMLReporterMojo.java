@@ -1,6 +1,7 @@
 package com.kncept.junit.reporter.maven;
 
 import java.io.File;
+import java.util.List;
 
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -9,23 +10,26 @@ import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 
+import com.kncept.junit.reporter.TestReportProcessor;
+import com.kncept.junit.reporter.TestRunResults;
 import com.kncept.junit.reporter.domain.CssRagStatus;
 import com.kncept.junit.reporter.exception.TestReporterError;
 import com.kncept.junit.reporter.exception.TestReporterFailure;
-import com.kncept.junit.reporter.html.TestReportProcessor;
 
 @Mojo(name = "junit-reporter", defaultPhase = LifecyclePhase.VERIFY)
 public class TestHTMLReporterMojo extends AbstractMojo {
 
 	@Parameter
-	public boolean aggregated = false;
-	
-	@Parameter
 	public boolean failOnEmpty = true;
+	
 	
 	//input directory
 	@Parameter(defaultValue = "${project.basedir}/target/")
 	public File testResultsDir;
+	
+	@Parameter
+	public int maxDepth = 3;
+	
 	
 	//output directory
 	@Parameter(defaultValue = "${project.basedir}/target/junit-reporter")
@@ -42,40 +46,18 @@ public class TestHTMLReporterMojo extends AbstractMojo {
 	
 	public void execute() throws MojoExecutionException, MojoFailureException {
 		try {
-			if (System.getProperty("dump-info", "false").equals("true"))
-					dumpInfo();
-			TestReportProcessor reportProcessor = new TestReportProcessor(
-					testResultsDir,
-					testReportsDir,
-					aggregated,
-					failOnEmpty,
-					new CssRagStatus(cssRed, cssAmber, cssGreen)
-			);
-			reportProcessor.run();
+			TestReportProcessor processor = new TestReportProcessor();
+			
+			List<TestRunResults> results = processor.scan(testResultsDir, maxDepth);
+			if (failOnEmpty && results.isEmpty())
+				throw new MojoFailureException("No XML Test reports to process");
+			
+			processor.write(testReportsDir, new CssRagStatus(cssRed, cssAmber, cssGreen), results);
 		
 		} catch (TestReporterError e) {
 			throw new MojoExecutionException(e.getMessage(), e);
 		} catch (TestReporterFailure e) {
 			throw new MojoFailureException(e.getMessage());
 		}
-	}
-	
-	private void dumpInfo() {
-		getLog().info("aggregated = " + aggregated);
-		getLog().info("failOnEmpty = " + failOnEmpty);
-		getLog().info("cssRed = " + cssRed);
-		getLog().info("cssAmber = " + cssAmber);
-		getLog().info("cssGreen = " + cssGreen);
-		
-		getLog().info("testResultsDir = " + testResultsDir);
-		getLog().info("testReportsDir = " + testReportsDir);
-		
-		getPluginContext().keySet().forEach(key -> {
-			String type = getPluginContext().get(key).getClass().getName();
-			getLog().info("context: " + key + " of type " + type);
-		});
-
-//[INFO] context: project of type org.apache.maven.project.MavenProject
-//[INFO] context: pluginDescriptor of type org.apache.maven.plugin.descriptor.PluginDescriptor
 	}
 }

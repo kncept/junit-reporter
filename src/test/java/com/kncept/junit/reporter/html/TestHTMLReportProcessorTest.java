@@ -1,6 +1,6 @@
 package com.kncept.junit.reporter.html;
 
-import static com.kncept.junit.reporter.html.TestReportProcessor.xmlTestFile;
+import static com.kncept.junit.reporter.TestReportProcessor.xmlTestFile;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 

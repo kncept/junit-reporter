@@ -1,5 +1,9 @@
 # junit-reporter [![Build Status](https://travis-ci.org/kncept/junit-reporter.svg?branch=master)](https://travis-ci.org/kncept/junit-reporter)
 
+A plugin to convert XML test results to HTML a perform some aggregation.<br/>
+No config required by default.<br/>
+Also useful if you need the XML files and still want a human-readable output.
+
 # SNAPSHOT version (including documentation).
 Browse repo at release [1.2](https://github.com/kncept/junit-reporter/tree/d2fd607393bedd309c35738ef0de54891f2db5f2) for accurate docs.
 
@@ -99,7 +103,7 @@ Defaults are shown below, just delete what you don't need.
 # Command Line Usage
 Command line support has been built.<br/>
 The jar file is executable, and the options have the same names as in build configuration blocks.<br/>
-The main class name is com.kncept.junit.reporter.html.TestReportProcessor.<br/>
+The main class name is com.kncept.junit.reporter.TestReportProcessor.<br/>
 Options use a simple equals sign.<br/>
  eg: `java -jar junit-reporter-2.0.0 aggregated=true` to process reports in the current dir
 

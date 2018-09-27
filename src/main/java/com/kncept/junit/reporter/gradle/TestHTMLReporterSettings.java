@@ -3,7 +3,7 @@ package com.kncept.junit.reporter.gradle;
 public class TestHTMLReporterSettings {
 	public static final String settingsExtensionName = "junitHtmlReport";
 	
-	private boolean aggregated = false;
+	private int maxDepth = 3;
 	
 	//RAG status
 	private String cssRed = "red";
@@ -15,12 +15,12 @@ public class TestHTMLReporterSettings {
 	
 	private boolean failOnEmpty = true;
 	
-	public void setAggregated(boolean aggregated) {
-		this.aggregated = aggregated;
+	public void setMaxDepth(int maxDepth) {
+		this.maxDepth = maxDepth;
 	}
 	
-	public boolean isAggregated() {
-		return aggregated;
+	public int getMaxDepth() {
+		return maxDepth;
 	}
 	
 	public void setCssRed(String cssRed) {
