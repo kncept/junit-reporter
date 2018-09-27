@@ -42,6 +42,11 @@ version = '2.0.0'
 
 def jUnit5Version = "5.2.0"
 
+//add embedded maven build
+configurations {
+    mavenEmbedder
+}
+
 //add generated source sets
 sourceSets {
 	// javascript output directory
@@ -58,11 +63,8 @@ sourceSets {
 }
 task initGeneratedDirectories {
 	doFirst {
-		File resourcesDir = new File('generatedsrc/main/resources')
-		resourcesDir.mkdirs();
-		
-		resourcesDir = new File('generatedsrc/test/resources')
-		resourcesDir.mkdirs();
+		new File('generatedsrc/main/resources').mkdirs()
+		new File('generatedsrc/test/resources').mkdirs()
 	}
 }
 task cleanGeneratedDirectories {
@@ -155,7 +157,6 @@ jar {
 	}
 }
 
-
 artifacts {
     archives javadocJar, sourcesJar, testSourcesJar
 }
@@ -190,11 +191,9 @@ uploadArchives {
   repositories {
     mavenDeployer {
       beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
-
       repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
         authentication(userName: username, password: password)
       }
-
       snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
         authentication(userName: username, password: password)
       }
@@ -203,7 +202,7 @@ uploadArchives {
         name 'Junit Reporter'
         packaging 'jar'
         // optionally artifactId can be defined here 
-        description 'Produces HTML reports from the Junit xml report'
+        description 'Produces HTML reports from the Junit xml output'
         url 'https://github.com/kncept/junit-reporter'
 
         scm {
@@ -236,10 +235,85 @@ dependencies {
 	testCompile "org.junit.jupiter:junit-jupiter-api:${jUnit5Version}"
 	testRuntime "org.junit.jupiter:junit-jupiter-engine:${jUnit5Version}"
 	
+	compile "org.apache.maven:maven-plugin-api:3.5.4"
+	compile "org.apache.maven.plugin-tools:maven-plugin-annotations:3.5.2"
+	
 	pretestCompile "org.junit.jupiter:junit-jupiter-api:${jUnit5Version}"
 	pretestRuntime "org.junit.jupiter:junit-jupiter-engine:${jUnit5Version}"
 	pretestRuntime "org.junit.platform:junit-platform-console:1.2.0"
+	
+	//Maven3 plugin builder
+	mavenEmbedder "org.apache.maven:maven-embedder:3.5.4"
+    mavenEmbedder 'org.slf4j:slf4j-simple:1.7.5'
+    mavenEmbedder "org.apache.maven:maven-compat:3.5.4"
+    mavenEmbedder 'org.eclipse.aether:aether-connector-basic:1.1.0'
+    mavenEmbedder 'org.eclipse.aether:aether-transport-wagon:1.1.0'
+    mavenEmbedder 'org.apache.maven.wagon:wagon-http:3.1.0'
+    mavenEmbedder 'org.apache.maven.wagon:wagon-provider-api:3.1.0'
 }
+
+
+// loosely based on https://gist.github.com/ctran/2c753055ce7e6730ae24594a37152272
+// runs the plugin description generator
+task generatePluginDescriptor(type: JavaExec, dependsOn: compileJava) {
+
+	//def outputDirectory = new File("generatedsrc/main/resources")
+	//def directory = outputDirectory
+	
+	def directory = buildDir.canonicalPath
+    def outputDirectory = compileJava.destinationDir.canonicalPath
+
+
+    classpath = configurations.mavenEmbedder
+    main = 'org.apache.maven.cli.MavenCli'
+    systemProperties['maven.multiModuleProjectDirectory'] = projectDir
+    args = [
+            '--errors',
+            '--batch-mode',
+            "--file", new File("generatedsrc/main/resources/plugin-pom.xml").canonicalPath,
+            //"-Dmaven.multiModuleProjectDirectory=" + projectDir.canonicalPath, //why is this not working...
+            "org.apache.maven.plugins:maven-plugin-plugin:3.5.2:descriptor"
+    ]
+    doFirst {
+    	pom {
+	        project {
+	        	name "Junit Reporter"
+	            groupId "${project.group}"
+	            artifactId 'junit-reporter'
+	            version "${project.version}"
+	            packaging "maven-plugin"
+	        }
+	    }.withXml {
+	    	asNode().appendNode("build").with {
+	    		appendNode("directory", directory)
+	    		appendNode("outputDirectory", outputDirectory)
+	    		appendNode("plugins").with {
+	    			appendNode("plugin").with {
+	    				appendNode("groupId", "org.apache.maven.plugins")
+	    				appendNode("artifactId", "maven-plugin-plugin")
+	    				appendNode("version", "3.5.2")
+	    				appendNode("configuration").with {
+	    					appendNode("skipErrorNoDescriptorsFound", "true")
+	    				}
+	    				appendNode("executions").with {
+	    					appendNode("execution").with {
+	    						appendNode("id", "mojo-descriptor")
+	    						//appendNode("phase", "process-classes")
+	    						appendNode("goals").with {
+	    							appendNode("goal", "descriptor")
+	    						}
+	    					}
+	    				}
+	    			}
+	    		}
+	    	}
+	    }.writeTo("generatedsrc/main/resources/plugin-pom.xml")
+    }
+}
+jar.dependsOn generatePluginDescriptor
+generatePluginDescriptor.dependsOn compileJava
+
+
 
 node {
 	// Version of node to use.

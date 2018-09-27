@@ -127,11 +127,11 @@ public class Junit4DomReader implements TestSuite {
 		return null;
 	}
 	
-	private List<String> handleTextNode(Node node) {
+	private List<String> handleTextNode(Node node) throws IOException {
 		List<String> lines = new ArrayList<>();
 		if (node != null) {
 			NodeList nl = node.getChildNodes();
-			for(int i = 0; i < nl.getLength(); i++) try {
+			for(int i = 0; i < nl.getLength(); i++) {
 				Node child = nl.item(i);
 				
 				//switch to BufferedReader rather than string split to handle unix/windows cross platform rendering
@@ -142,8 +142,6 @@ public class Junit4DomReader implements TestSuite {
 					line = bIn.readLine();
 				}
 				
-			} catch (IOException e) {
-				throw new RuntimeException(e);
 			}
 		}
 		return lines;

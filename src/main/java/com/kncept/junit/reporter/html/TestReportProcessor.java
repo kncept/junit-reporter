@@ -11,6 +11,8 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.xml.sax.SAXException;
 
 import com.kncept.junit.reporter.domain.CssRagStatus;
+import com.kncept.junit.reporter.exception.TestReporterError;
+import com.kncept.junit.reporter.exception.TestReporterFailure;
 import com.kncept.junit.reporter.xml.Junit4DomReader;
 import com.kncept.junit.reporter.xml.TestSuite;
 
@@ -87,48 +89,55 @@ public class TestReportProcessor {
 	}
 	
 	
-	public void run() throws IOException {
-		TestReportWriter reporter =null;
-		
-		for(File file: testResultsDir.listFiles()) {
-			if (!file.isDirectory() && !aggregatedReporting)
-				continue;
-			if (!aggregatedReporting)
-				reporter = null;
+	public void run() throws TestReporterError, TestReporterFailure {
+		if (failOnEmpty && (!testResultsDir.exists() || !testResultsDir.isDirectory()))
+			throw new TestReporterFailure("Directory does not exist: " + testResultsDir);
+		try {
+			TestReportWriter reporter = null;
 			
-				if (file.isDirectory()) {
-					for(File testFile: file.listFiles()) {
-						if (xmlTestFile(testFile)) {
-							TestSuite restResults = readFile(testFile);
-							if (reporter == null)
-								reporter = new TestReportWriter(aggregatedReporting ? null : file.getName());
-							reporter.include(restResults);
+			if (testResultsDir.exists() && testResultsDir.isDirectory()) 
+			for(File file: testResultsDir.listFiles()) {
+				if (!file.isDirectory() && !aggregatedReporting)
+					continue;
+//				if (!aggregatedReporting)
+//					reporter = null;
+				
+					if (file.isDirectory()) {
+						for(File testFile: file.listFiles()) {
+							if (xmlTestFile(testFile)) {
+								TestSuite restResults = readFile(testFile);
+								if (reporter == null)
+									reporter = new TestReportWriter(aggregatedReporting ? null : file.getName());
+								reporter.include(restResults);
+							}
 						}
+						if (reporter != null && !aggregatedReporting)
+							reporter.write(testReportsDir, cssRagStatus);
+					} else if (xmlTestFile(file) && aggregatedReporting) {
+						TestSuite restResults = readFile(file);
+						if (reporter == null)
+							reporter = new TestReportWriter(aggregatedReporting ? null : file.getName());
+						reporter.include(restResults);
 					}
-					if (reporter != null && !aggregatedReporting)
-						reporter.write(testReportsDir, cssRagStatus);
-				} else if (xmlTestFile(file) && aggregatedReporting) {
-					TestSuite restResults = readFile(file);
-					if (reporter == null)
-						reporter = new TestReportWriter(aggregatedReporting ? null : file.getName());
-					reporter.include(restResults);
-				}
-		}
-		if (reporter == null) { //no files? break the build by default.
-			if (failOnEmpty)
-				throw new RuntimeException("No Test XML Reports to generate a HTML Report found.");
-			else {
-				System.out.println("No Test XML Reports to generate a HTML Report found.");
-				return;
 			}
-		}
-		if (aggregatedReporting)
-			reporter.write(testReportsDir, cssRagStatus);
-		
-		if (aggregatedReporting) {
-			System.out.println("Reports written to " + testReportsDir.getAbsolutePath() + File.separator + "index.html");
-		} else {
-			System.out.println("Reports written to " + testReportsDir.getAbsolutePath() + File.separator + reporter.getCategory() + File.separator + "index.html");
+			if (reporter == null) { //no files? break the build by default.
+				if (failOnEmpty)
+					throw new TestReporterFailure("No Test XML Reports to generate a HTML Report found.");
+				else {
+					System.out.println("No Test XML Reports to generate a HTML Report found.");
+					return;
+				}
+			}
+			if (aggregatedReporting)
+				reporter.write(testReportsDir, cssRagStatus);
+			
+			if (aggregatedReporting) {
+				System.out.println("Reports written to " + testReportsDir.getAbsolutePath() + File.separator + "index.html");
+			} else {
+				System.out.println("Reports written to " + testReportsDir.getAbsolutePath() + File.separator + reporter.getCategory() + File.separator + "index.html");
+			}
+		} catch (IOException e) {
+			throw new TestReporterError(e);
 		}
 	}
 	
@@ -144,13 +153,13 @@ public class TestReportProcessor {
 		throw new UnsupportedOperationException("Unable to determine test case name from file " + file.getName());
 	}
 	
-	private TestSuite readFile(File file) throws IOException {
+	private TestSuite readFile(File file) throws TestReporterError, IOException {
 		try (InputStream in = new FileInputStream(file)) {
 			return new Junit4DomReader(testCaseName(file), in);
 		} catch (ParserConfigurationException e) {
-			throw new RuntimeException(e);
+			throw new TestReporterError(e);
 		} catch (SAXException e) {
-			throw new RuntimeException(e);
+			throw new TestReporterError(e);
 		}
 	}
 	
