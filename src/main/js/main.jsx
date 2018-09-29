@@ -116,7 +116,7 @@ ReactDOM.render(
         <Tabs   
         titles={['Summary', 'Packages', 'Classs', 'Tests', 'Test Suites', 'System Properties', 'Environment Properties']}
     >
-        <div className="totals">
+        <div key="totals" className="totals">
             <span className="mainSummary">
                 <table>
                     <tbody>
@@ -132,12 +132,12 @@ ReactDOM.render(
                 <div>Success Rate: <span className={totals.passed == totals.executed ? "g" : "r"}>{Math.round(10000 * Number(totals.passed) / Number(totals.executed)) / 100}%</span></div>
             </span>
         </div>
-        <OptionedReactTable data={packageTotals} columns={packageSummaryHeaders} />
-        <OptionedReactTable data={classTotals}   columns={classSummaryHeaders} />
-        <OptionedReactTable data={tests}         columns={testDataHeaders} SubComponent={(row) => {return row.original.stackTrace == null ? null : <pre>{row.original.stackTrace}</pre>}} />
-        <OptionedReactTable data={testSuites}    columns={testSuitesHeader} />
-        <OptionedReactTable data={buildTimeSystemProperties} columns={nvpHeader} />
-        <OptionedReactTable data={buildTimeEnvironmentProperties} columns={nvpHeader} />
+        <OptionedReactTable key="packageTotals" data={packageTotals} columns={packageSummaryHeaders} />
+        <OptionedReactTable key="classTotals"   data={classTotals}   columns={classSummaryHeaders} />
+        <OptionedReactTable key="tests"         data={tests}         columns={testDataHeaders} SubComponent={(row) => {return row.original.stackTrace == null ? null : <pre>{row.original.stackTrace}</pre>}} />
+        <OptionedReactTable key="testSuites"    data={testSuites}    columns={testSuitesHeader} />
+        <OptionedReactTable key="sysprops"      data={buildTimeSystemProperties} columns={nvpHeader} />
+        <OptionedReactTable key="envprops"      data={buildTimeEnvironmentProperties} columns={nvpHeader} />
     </Tabs>
     </span>,
     document.getElementById('root')
