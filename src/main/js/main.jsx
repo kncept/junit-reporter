@@ -30,7 +30,7 @@ const testDataHeaders = [
 ];
 
 const testSuitesHeader = [
-    {Header: 'Name',  accessor: 'name', width: 400},
+    {Header: 'Name',  accessor: 'suiteName', width: 400},
     {Header: 'Tests Run', accessor: 'totals.executed', width: 100},
     {Header: 'Tests Skipped', accessor: 'totals.skipped', width: 100}
 ];

@@ -1,7 +1,7 @@
 package com.kncept.junit.reporter;
 
 import static com.kncept.junit.reporter.json.JsonUtils.toJsMap;
-import static com.kncept.junit.reporter.json.JsonUtils.toJsMapValue;
+import static com.kncept.junit.reporter.json.JsonUtils.toJsMapStringValue;
 
 import java.math.BigDecimal;
 
@@ -47,14 +47,14 @@ public class SummaryBucket {
 	
 	public String toString() {
 		return toJsMap(
-				toJsMapValue("key", key),
-				toJsMapValue("passed", Integer.toString(passed)),
-				toJsMapValue("skipped", Integer.toString(skipped)),
-				toJsMapValue("failed", Integer.toString(failed)),
-				toJsMapValue("errored", Integer.toString(errored)),
-				toJsMapValue("available", Integer.toString(passed + skipped + failed + errored)),
-				toJsMapValue("executed", Integer.toString(passed + failed + errored)),
-				toJsMapValue("duration", duration.toString())
+				toJsMapStringValue("key", key),
+				toJsMapStringValue("passed", Integer.toString(passed)),
+				toJsMapStringValue("skipped", Integer.toString(skipped)),
+				toJsMapStringValue("failed", Integer.toString(failed)),
+				toJsMapStringValue("errored", Integer.toString(errored)),
+				toJsMapStringValue("available", Integer.toString(passed + skipped + failed + errored)),
+				toJsMapStringValue("executed", Integer.toString(passed + failed + errored)),
+				toJsMapStringValue("duration", duration.toString())
 				);
 	}
 }

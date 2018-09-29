@@ -2,7 +2,8 @@ package com.kncept.junit.reporter.html;
 
 import static com.kncept.junit.reporter.json.JsonUtils.toJsMap;
 import static com.kncept.junit.reporter.json.JsonUtils.toJsMapArrayValue;
-import static com.kncept.junit.reporter.json.JsonUtils.toJsMapValue;
+import static com.kncept.junit.reporter.json.JsonUtils.toJsMapEmbeddedValue;
+import static com.kncept.junit.reporter.json.JsonUtils.toJsMapStringValue;
 import static com.kncept.junit.reporter.json.JsonUtils.toJsNvpArray;
 
 import java.io.BufferedReader;
@@ -38,6 +39,7 @@ public class TestReportWriter {
 	public void write(File outputDir, CssRagStatus ragStatusSettings) throws IOException {
 		Collections.sort(runResults, (t1, t2) -> {return String.CASE_INSENSITIVE_ORDER.compare(t1.category(), t2.category());});
 		
+		outputDir.mkdirs();
 		writeDynamicData(outputDir, ragStatusSettings);
 		writeStaticData(outputDir);
 		
@@ -57,20 +59,22 @@ public class TestReportWriter {
 	
 	private void writeDataJs(File htmlDir) throws IOException {
 		try (		
-				PrintStream out = new PrintStream(new FileOutputStream(new File(htmlDir, "data.js")));
+				PrintStream dataJsOut = new PrintStream(new FileOutputStream(new File(htmlDir, "data.js")));
+				PrintStream testsJsOut = new PrintStream(new FileOutputStream(new File(htmlDir, "tests.js")));
+				PrintStream suitesJsOut = new PrintStream(new FileOutputStream(new File(htmlDir, "suites.js")));
 		) {
 			Map<String, SummaryBucket> byPackage = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
 			Map<String, SummaryBucket> byClass = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
 			Map<String, SummaryBucket> byTestSuite = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
 			
 			int index = 0;
-			out.println("const tests = [");
+			testsJsOut.println("const tests = [");
 			for(TestRunResults results: runResults) {
 				for(TestSuite suite: results.results()) {
 					boolean suiteHasOutput = !suite.sysErr().isEmpty() || !suite.sysOut().isEmpty();
 					for(TestCase test: suite.testcases()) {
-						if (index != 0) out.println(",");
-						out.print(toJs(index, suiteHasOutput, suite.name(), results.category(), test));
+						if (index != 0) testsJsOut.println(",");
+						testsJsOut.print(toJs(index, suiteHasOutput, suite.name(), results.category(), test));
 						
 						getSummaryBucket(byPackage, test.getPackagename()).include(test);
 						getSummaryBucket(byClass, test.getClassname()).include(test);
@@ -80,61 +84,62 @@ public class TestReportWriter {
 					}
 				}
 			}
-			out.println();
-			out.println("];");
+			testsJsOut.println();
+			testsJsOut.println("];");
 			
-			out.println("const totals = " + summary() + ";");
-			printSummaryBuckets(out, "packageTotals", byPackage.values());
-			printSummaryBuckets(out, "classTotals", byClass.values());
-			printSummaryBuckets(out, "testSuiteTotals", byTestSuite.values());
+			dataJsOut.println("const totals = " + summary() + ";");
+			printSummaryBuckets(dataJsOut, "packageTotals", byPackage.values());
+			printSummaryBuckets(dataJsOut, "classTotals", byClass.values());
+			printSummaryBuckets(dataJsOut, "testSuiteTotals", byTestSuite.values());
 			
 			
 			index = 0;
-			out.println("const testSuites = [");
+			suitesJsOut.println("const testSuites = [");
 			for(TestRunResults results: runResults) {
 				for(TestSuite suite: results.results()) {
-					if (index != 0) out.println(",");
-					out.print(toJs(results.category(), suite));
+					if (index != 0) suitesJsOut.println(",");
+					suitesJsOut.print(toJs(results.category(), suite));
 					index++;
 				}
 			}
-			out.println();
-			out.println("];");
+			suitesJsOut.println();
+			suitesJsOut.println("];");
 			
-			out.println("const buildTimeSystemProperties = ");
-			out.println(toJsNvpArray(systemProperties()));
-			out.println(";");
+			dataJsOut.println("const buildTimeSystemProperties = ");
+			dataJsOut.println(toJsNvpArray(systemProperties()));
+			dataJsOut.println(";");
 			
-			out.println("const buildTimeEnvironmentProperties = ");
-			out.println(toJsNvpArray(System.getenv()));
-			out.println(";");
+			dataJsOut.println("const buildTimeEnvironmentProperties = ");
+			dataJsOut.println(toJsNvpArray(System.getenv()));
+			dataJsOut.println(";");
 			
-			out.flush();
+			dataJsOut.flush();
+			testsJsOut.flush();
+			suitesJsOut.flush();
 		}
 		
 	}
 	
 	private String toJs(int index, boolean suiteHasOutput, String suiteName, String category, TestCase test) {
 		List<String> attrs = new ArrayList<>();
-		attrs.add(toJsMapValue("testClass", test.getClassname()));
-		attrs.add(toJsMapValue("testName", test.getName()));
-		attrs.add(toJsMapValue("duration", test.getDuration().toPlainString()));
-		attrs.add(toJsMapValue("status", test.getStatus().name()));
+		attrs.add(toJsMapStringValue("testClass", test.getClassname()));
+		attrs.add(toJsMapStringValue("testName", test.getName()));
+		attrs.add(toJsMapStringValue("duration", test.getDuration().toPlainString()));
+		attrs.add(toJsMapStringValue("status", test.getStatus().name()));
 		
 		if (test.getUnsuccessfulMessage() != null)
-			attrs.add(toJsMapValue("unsuccessfulMessage", test.getUnsuccessfulMessage()));
+			attrs.add(toJsMapStringValue("unsuccessfulMessage", test.getUnsuccessfulMessage()));
 		if (test.getStackTrace() != null)
-			attrs.add(toJsMapValue("stackTrace", test.getStackTrace()));
+			attrs.add(toJsMapStringValue("stackTrace", test.getStackTrace()));
 		
 		attrs.add(toJsMapArrayValue("systemOut", test.getSystemOut()));
 		attrs.add(toJsMapArrayValue("systemErr", test.getSystemErr()));
-		attrs.add(toJsMapValue("testId", Integer.toString(index)));
+		attrs.add(toJsMapStringValue("testId", Integer.toString(index)));
 		
-		attrs.add(toJsMapValue("suiteHasOutput", Boolean.toString(suiteHasOutput)));
-		attrs.add(toJsMapValue("suiteName", suiteName));
+		attrs.add(toJsMapStringValue("suiteHasOutput", Boolean.toString(suiteHasOutput)));
+		attrs.add(toJsMapStringValue("suiteName", suiteName));
 		
-		attrs.add(toJsMapValue("category", category));
-		
+		attrs.add(toJsMapStringValue("category", category));
 		
 		return toJsMap(attrs.toArray(new String[attrs.size()]));
 	}
@@ -146,16 +151,19 @@ public class TestReportWriter {
 		for(TestCase test: suite.testcases()) suiteTotals.include(test);
 
 		return toJsMap(
-				toJsMapValue("suiteName", suite.name()),
-				toJsMapValue("suiteHasOutput", Boolean.toString(suiteHasOutput)),
+				toJsMapStringValue("suiteName", suite.name()),
+				toJsMapStringValue("suiteHasOutput", Boolean.toString(suiteHasOutput)),
 				toJsMapArrayValue("sysout", suite.sysOut()),
 				toJsMapArrayValue("syserr", suite.sysErr()),
-				toJsMapValue("totals", suiteTotals.toString()),
 				
-				toJsMapValue("testSuiteProps", toJsNvpArray(suite.testsuiteProperties())),
-				toJsMapValue("sysprops", toJsNvpArray(suite.systemProperties())),
+				toJsMapEmbeddedValue("totals", suiteTotals.toString()),
 				
-				toJsMapValue("category", category)
+				toJsMapStringValue("testSuiteProps", toJsNvpArray(suite.testsuiteProperties())),
+				toJsMapStringValue("sysprops", toJsNvpArray(suite.systemProperties())),
+				
+				toJsMapStringValue("category", category),
+				
+				toJsMapStringValue("id", category +"/" + suite.name())
 		);
 	}
 	

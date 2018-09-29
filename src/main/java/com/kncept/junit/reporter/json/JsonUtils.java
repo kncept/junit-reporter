@@ -30,8 +30,12 @@ public final class JsonUtils {
 		return value;
 	}
 	
-	public static String toJsMapValue(String key, String value) {
+	public static String toJsMapStringValue(String key, String value) {
 		return key + ": \"" + addDelimiters(value) + "\"";
+	}
+	
+	public static String toJsMapEmbeddedValue(String key, String value) {
+		return key + ": " + value;
 	}
 	
 	public static String toJsMapArrayValue(String key, List<String> values) {
@@ -54,8 +58,8 @@ public final class JsonUtils {
 		while(values.hasNext()) {
 			Map.Entry<String, String> next = values.next();
 			sb.append(toJsMap(
-					toJsMapValue("name", next.getKey()),
-					toJsMapValue("value", next.getValue())
+					toJsMapStringValue("name", next.getKey()),
+					toJsMapStringValue("value", next.getValue())
 			));
 			if(values.hasNext()) {
 				sb.append(",\n");
