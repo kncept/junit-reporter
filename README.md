@@ -4,9 +4,6 @@ A plugin to convert XML test results to HTML a perform some aggregation.<br/>
 No config required by default.<br/>
 Also useful if you need the XML files and still want a human-readable output.
 
-# SNAPSHOT version (including documentation).
-Browse repo at release [1.2](https://github.com/kncept/junit-reporter/tree/d2fd607393bedd309c35738ef0de54891f2db5f2) for accurate docs.
-
 # Gradle
 
 ### Applying
@@ -17,7 +14,7 @@ Add or merge this to the top of your buildscript libraries via the mavenCentral 
             mavenCentral()
         }
         dependencies {
-            classpath 'com.kncept.junit5.reporter:junit-reporter:2.0.0'
+            classpath 'com.kncept.junit.reporter:junit-reporter:2.0.0'
         }
     }
 
@@ -63,23 +60,28 @@ Use the following config block (shown with default values):
 
 # Maven
 
+Maven doesn't like running plugins after test failures.
+The plugin can be run directly (assuming the configuration below) with the following command:
+
+    mvn com.kncept.junit.reporter:junit-reporter:2.0.0:junit-reporter
+
 ### Applying
 
-In the project/build/plugins element, add the plugin.
+In the project/build/plugins element, add the plugin. Suggested execution binding is for the 'verify' phase.
 
 	<plugin>
 		<groupId>com.kncept.junit.reporter</groupId>
 		<artifactId>junit-reporter</artifactId>
 		<version>2.0.0</version>
 		<executions>
-		<execution>
-			<id>junit-reporter</id>
-			<phase>verify</phase>
-			<goals>
-				<goal>junit-reporter</goal>
-			</goals>
-		</execution>
-	</executions>
+			<execution>
+				<id>junit-reporter</id>
+				<phase>verify</phase>
+				<goals>
+					<goal>junit-reporter</goal>
+				</goals>
+			</execution>
+		</executions>
 	</plugin>
 	
 	
