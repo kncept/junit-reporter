@@ -107,7 +107,7 @@ Command line support has been built.<br/>
 The jar file is executable, and the options have the same names as in build configuration blocks.<br/>
 The main class name is com.kncept.junit.reporter.TestReportProcessor.<br/>
 Options use a simple equals sign.<br/>
- eg: `java -jar junit-reporter-2.0.0 aggregated=true` to process reports in the current dir
+ eg: `java -jar junit-reporter-2.0.0.jar aggregated=true` to process reports in the current dir
 
 # Final Thoughts
 
