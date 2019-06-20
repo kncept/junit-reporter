@@ -1,9 +1,8 @@
 package com.kncept.junit.reporter;
 
 import static org.gradle.testfixtures.ProjectBuilder.builder;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-
-import java.io.File;
 
 import org.gradle.api.Project;
 import org.gradle.api.Task;
@@ -32,4 +31,10 @@ public class TestHTMLReporterPluginTest {
 	private <T extends Throwable> void addExceptionType(Class<T> type) throws T {
 	}
 	
+	@Test
+	public void canFindNestedTaskNames() {
+		TestHTMLReporterPlugin sut = new TestHTMLReporterPlugin();
+		assertEquals("plain", sut.plainTaskName("plain"));
+		assertEquals("child", sut.plainTaskName("parent:child"));
+	}
 }
