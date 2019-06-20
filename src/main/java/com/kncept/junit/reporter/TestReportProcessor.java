@@ -26,11 +26,12 @@ public class TestReportProcessor {
 			System.out.println("Usage:");
 			System.out.println(" TestHTMLReportProcessor option=value");
 			System.out.println(" with the following options:");
-			System.out.println("  testResultsDir");
-			System.out.println("  testReportsDir");
-			System.out.println("  maxDepth");
-			System.out.println("  failOnEmpty");
-			System.out.println("  cssRed");
+			System.out.println("  dir            (sets results and reports directories)");
+			System.out.println("  testResultsDir (sets results directory))");
+			System.out.println("  testReportsDir (sets reports directory)");
+			System.out.println("  maxDepth       (nested directories to scan. default 3)");
+			System.out.println("  failOnEmpty    (fail on no results found)");
+			System.out.println("  cssRed)");
 			System.out.println("  cssAmber");
 			System.out.println("  cssGreen");
 			System.exit(0);
@@ -50,6 +51,9 @@ public class TestReportProcessor {
 		TestReportProcessor processor = new TestReportProcessor();
 
 		for(String arg: args) {
+			testResultsDir = processArg("dir", arg, dir -> new File(dir), testResultsDir);
+			testReportsDir = processArg("dir", arg, dir -> new File(dir), testReportsDir);
+
 			testResultsDir = processArg("testResultsDir", arg, dir -> new File(dir), testResultsDir);
 			testReportsDir = processArg("testReportsDir", arg, dir -> new File(dir), testReportsDir);
 			maxDepth = processArg("maxDepth", arg, i -> Integer.parseInt(i), maxDepth);
