@@ -2,6 +2,7 @@
 // Useful gradle targets:
 //  gradlew install  -->>  install to local maven repo
 //  gradlew uploadArchives  -->>  upload to oss.sonatype.org
+//  gradlew publishPlugins  -->>  upload to plugins.gradle.org
 //  gradlew check  -->>  Performs standard testing
 //  gradlew wrapper -->> re run the gradle wrapper script 
 
@@ -21,6 +22,9 @@ buildscript {
 }
 
 plugins {
+	// https://plugins.gradle.org/docs/publish-plugin
+	id "com.gradle.plugin-publish" version "0.10.1"
+
 	// https://docs.gradle.org/current/userguide/javaGradle_plugin.html
     id 'java-gradle-plugin'
 }
@@ -40,9 +44,29 @@ sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
 group = 'com.kncept.junit.reporter'
-version = '2.0.1-SNAPSHOT'
+version = '2.0.1'
 
 def jUnit5Version = "5.4.2"
+
+gradlePlugin {
+  plugins {
+    reporterPlugin {
+      id = 'com.kncept.junit.reporter'
+      implementationClass = 'com.kncept.junit.reporter.gradle.TestHTMLReporterPlugin'
+    }
+  }
+}
+pluginBundle {
+  website = 'https://github.com/kncept/junit-reporter'
+  vcsUrl = 'https://github.com/kncept/junit-reporter.git'
+  description = 'Produces HTML reports from the Junit xml output'
+  tags = ['junit', 'report']
+  plugins {
+    reporterPlugin {
+      displayName = 'Junit Reporter'
+    }
+  }
+}
 
 //add embedded maven build
 configurations {
