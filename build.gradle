@@ -167,7 +167,7 @@ signing {
 signArchives.onlyIf {new File('gradle.properties').exists()}
 
 wrapper {
-	gradleVersion = '4.10.2'
+	gradleVersion = '4.10.3'
 }
 
 repositories {
