@@ -109,7 +109,7 @@ public class TestReportProcessor {
 		} catch (IOException e) {
 			throw new TestReporterError(e);
 		}
-		System.out.println("Reports written to " + testReportsDir.getAbsolutePath());
+		System.out.println("Reports written to file://" + testReportsDir.getAbsolutePath() + File.separator + "index.html");
 	}
 	
 	
