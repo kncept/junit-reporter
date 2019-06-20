@@ -34,13 +34,15 @@ apply plugin: 'com.moowork.node'
 apply plugin: 'maven'
 apply plugin: 'signing'
 
+defaultTasks 'clean', 'check'
+
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
 group = 'com.kncept.junit.reporter'
 version = '2.0.1-SNAPSHOT'
 
-def jUnit5Version = "5.2.0"
+def jUnit5Version = "5.4.2"
 
 //add embedded maven build
 configurations {
