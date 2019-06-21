@@ -14,7 +14,7 @@ buildscript {
     }
     dependencies {
     	//previously released version of junit-reporter
-    	classpath 'com.kncept.junit.reporter:junit-reporter:2.0.0'
+    	classpath 'com.kncept.junit.reporter:junit-reporter:2.0.1'
         
         // https://github.com/srs/gradle-node-plugin/blob/master/docs/node.md
 		classpath 'com.moowork.gradle:gradle-node-plugin:1.2.0'
@@ -85,6 +85,7 @@ sourceSets {
 	}
 	pretest {
 		java.srcDirs += 'src/pretest/java'
+		java.outputDir = file("$buildDir/pretest")
 	}
 }
 task initGeneratedDirectories {
@@ -116,7 +117,7 @@ test {
 task compilePretest (type: JavaCompile) {
 	source = sourceSets.pretest.java.srcDirs
 	classpath = project.sourceSets.pretest.compileClasspath
-	destinationDir = sourceSets.pretest.output.classesDir
+	destinationDir = project.sourceSets.pretest.java.outputDir
 }
 compilePretest.dependsOn compileJava
 
@@ -193,7 +194,7 @@ signing {
 signArchives.onlyIf {new File('gradle.properties').exists()}
 
 wrapper {
-	gradleVersion = '4.10.3'
+	gradleVersion = '5.4.1'
 }
 
 repositories {
