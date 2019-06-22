@@ -16,10 +16,21 @@ import com.kncept.junit.reporter.domain.CssRagStatus;
 import com.kncept.junit.reporter.exception.TestReporterError;
 import com.kncept.junit.reporter.exception.TestReporterFailure;
 import com.kncept.junit.reporter.html.TestReportWriter;
+import com.kncept.junit.reporter.logger.JulWrapper;
+import com.kncept.junit.reporter.logger.Log;
+import com.kncept.junit.reporter.logger.LogFactory;
 import com.kncept.junit.reporter.xml.Junit4DomReader;
 import com.kncept.junit.reporter.xml.TestSuite;
 
 public class TestReportProcessor {
+	
+	private final LogFactory logFactory;
+	private final Log log;
+	
+	public TestReportProcessor(LogFactory logFactory) {
+		this.logFactory = logFactory;
+		this.log = logFactory.logger(getClass().getName());
+	}
 	
 	public static void main(String[] args) throws Exception {
 		if (args.length == 0) {
@@ -48,7 +59,7 @@ public class TestReportProcessor {
 		String cssGreen = "green";
 		
 		
-		TestReportProcessor processor = new TestReportProcessor();
+		TestReportProcessor processor = new TestReportProcessor(new JulWrapper());
 
 		for(String arg: args) {
 			testResultsDir = processArg("dir", arg, dir -> new File(dir), testResultsDir);
@@ -76,6 +87,7 @@ public class TestReportProcessor {
 	
 	public List<TestRunResults> scan(File testResultsDir, int maxDepth) throws TestReporterError, TestReporterFailure {
 		List<TestRunResults> allRunResults = scan(testResultsDir, ".", maxDepth);
+		log.debug("Total results found: " + allRunResults.size());
 		return allRunResults;
 	}
 	
@@ -93,6 +105,7 @@ public class TestReportProcessor {
 						runResults = new TestRunResults(category);
 						allRunResults.add(runResults);
 					}
+					log.debug("parsing file " + file.getPath());
 					runResults.results().add(readFile(file));
 				}
 			}
@@ -104,12 +117,12 @@ public class TestReportProcessor {
 		if (runResults.isEmpty())
 			return;
 		try {
-		TestReportWriter writer = new TestReportWriter(runResults);
+		TestReportWriter writer = new TestReportWriter(logFactory, runResults);
 		writer.write(testReportsDir, cssRagStatus);
 		} catch (IOException e) {
 			throw new TestReporterError(e);
 		}
-		System.out.println("Reports written to file://" + testReportsDir.getAbsolutePath() + File.separator + "index.html");
+		log.info("Reports written to file://" + testReportsDir.getAbsolutePath() + File.separator + "index.html");
 	}
 	
 	
@@ -127,7 +140,7 @@ public class TestReportProcessor {
 	
 	private TestSuite readFile(File file) throws TestReporterError {
 		try (InputStream in = new FileInputStream(file)) {
-			return new Junit4DomReader(testCaseName(file), in);
+			return new Junit4DomReader(logFactory, testCaseName(file), in);
 		} catch (ParserConfigurationException e) {
 			throw new TestReporterError(e);
 		} catch (SAXException e) {

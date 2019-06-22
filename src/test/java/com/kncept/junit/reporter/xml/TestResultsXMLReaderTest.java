@@ -15,6 +15,7 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 
 import com.kncept.junit.reporter.domain.TestCase;
+import com.kncept.junit.reporter.logger.JulWrapper;
 
 public class TestResultsXMLReaderTest {
 
@@ -76,7 +77,7 @@ public class TestResultsXMLReaderTest {
 	}
 	private TestSuite testResults() throws Exception {
 		InputStream in = getClass().getClassLoader().getResourceAsStream("TEST-junit-jupiter.xml");
-		return new Junit4DomReader("junit-jupiter", in);
+		return new Junit4DomReader(new JulWrapper(), "junit-jupiter", in);
 	}
 
 }

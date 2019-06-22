@@ -15,6 +15,7 @@ import com.kncept.junit.reporter.TestRunResults;
 import com.kncept.junit.reporter.domain.CssRagStatus;
 import com.kncept.junit.reporter.exception.TestReporterError;
 import com.kncept.junit.reporter.exception.TestReporterFailure;
+import com.kncept.junit.reporter.logger.MavenWrapper;
 
 @Mojo(name = "junit-reporter", defaultPhase = LifecyclePhase.VERIFY)
 public class TestHTMLReporterMojo extends AbstractMojo {
@@ -46,7 +47,7 @@ public class TestHTMLReporterMojo extends AbstractMojo {
 	
 	public void execute() throws MojoExecutionException, MojoFailureException {
 		try {
-			TestReportProcessor processor = new TestReportProcessor();
+			TestReportProcessor processor = new TestReportProcessor(new MavenWrapper(getLog()));
 			
 			List<TestRunResults> results = processor.scan(testResultsDir, maxDepth);
 			if (failOnEmpty && results.isEmpty())

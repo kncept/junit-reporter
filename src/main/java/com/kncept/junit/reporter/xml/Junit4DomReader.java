@@ -26,8 +26,13 @@ import org.xml.sax.SAXException;
 
 import com.kncept.junit.reporter.domain.TestCase;
 import com.kncept.junit.reporter.domain.TestCaseStatus;
+import com.kncept.junit.reporter.logger.Log;
+import com.kncept.junit.reporter.logger.LogFactory;
 
 public class Junit4DomReader implements TestSuite {
+	
+	private final LogFactory logFactory;
+	private final Log log;
 	
 	private final String testResultSetName;
 	private final LinkedHashMap<String, String> systemProperties = new LinkedHashMap<>();
@@ -36,7 +41,10 @@ public class Junit4DomReader implements TestSuite {
 	private final List<String> sysOut = new ArrayList<>();
 	private final List<String> sysErr = new ArrayList<>();
 	
-	public Junit4DomReader(String testResultSetName, InputStream in) throws ParserConfigurationException, SAXException, IOException {
+	public Junit4DomReader(LogFactory logFactory, String testResultSetName, InputStream in) throws ParserConfigurationException, SAXException, IOException {
+		this.logFactory = logFactory;
+		this.log = logFactory.logger(getClass().getName());
+		
 		this.testResultSetName = testResultSetName;
 		DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
 		Document doc = builder.parse(in);
@@ -108,6 +116,7 @@ public class Junit4DomReader implements TestSuite {
 			testCase.getSystemOut().addAll(handleTextNode(child(node, "system-out")));
 			testCase.getSystemErr().addAll(handleTextNode(child(node, "system-err")));
 			testcases.add(testCase);
+			log.debug("added " + testcases.size() + " results to test case " + testResultSetName);
 		}
 		
 	}

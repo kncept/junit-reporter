@@ -27,19 +27,27 @@ import com.kncept.junit.reporter.SummaryBucket;
 import com.kncept.junit.reporter.TestRunResults;
 import com.kncept.junit.reporter.domain.CssRagStatus;
 import com.kncept.junit.reporter.domain.TestCase;
+import com.kncept.junit.reporter.logger.Log;
+import com.kncept.junit.reporter.logger.LogFactory;
 import com.kncept.junit.reporter.xml.TestSuite;
 
 public class TestReportWriter {
+	private final LogFactory logFactory;
+	private final Log log;
 	List<TestRunResults> runResults;
 	
-	public TestReportWriter(List<TestRunResults> runResults) {
+	public TestReportWriter(LogFactory logFactory, List<TestRunResults> runResults) {
+		this.logFactory = logFactory;
+		this.log = logFactory.logger(getClass().getName());
 		this.runResults = new ArrayList<>(runResults);
 	}
 	
 	public void write(File outputDir, CssRagStatus ragStatusSettings) throws IOException {
 		Collections.sort(runResults, (t1, t2) -> {return String.CASE_INSENSITIVE_ORDER.compare(t1.category(), t2.category());});
-		
-		outputDir.mkdirs();
+		if (outputDir.mkdirs())
+			log.debug("created directory " + outputDir.getPath());
+		else
+			log.debug("using directory " + outputDir.getPath());
 		writeDynamicData(outputDir, ragStatusSettings);
 		writeStaticData(outputDir);
 		
@@ -228,13 +236,14 @@ public class TestReportWriter {
 		
 		for(String fileName: files) {
 			File outputFile = new File(htmlDir, fileName);
-			if (outputFile.exists())
-				outputFile.delete();
+			if (outputFile.exists() && outputFile.delete())
+				log.debug("deleted file " + fileName);
 			try (
 					OutputStream out = new FileOutputStream(outputFile);
 					InputStream in = getTemplate(fileName);
 			) {
 				copy(in, out);
+				log.debug("wrote file " + fileName);
 			} catch (IOException e) {
 				throw new IOException(fileName, e);
 			}

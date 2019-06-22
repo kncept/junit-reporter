@@ -19,6 +19,7 @@ import org.junit.jupiter.api.Test;
 import com.kncept.junit.reporter.TestRunResults;
 import com.kncept.junit.reporter.domain.CssRagStatus;
 import com.kncept.junit.reporter.domain.TestCase;
+import com.kncept.junit.reporter.logger.JulWrapper;
 import com.kncept.junit.reporter.xml.TestSuite;
 
 public class TestHTMLReportWriterTest {
@@ -32,7 +33,7 @@ public class TestHTMLReportWriterTest {
 	
 	@Test
 	public void canFindTemplates() throws Exception {
-		TestReportWriter writer = new TestReportWriter(asList(generateSimpleResults()));
+		TestReportWriter writer = new TestReportWriter(new JulWrapper(), asList(generateSimpleResults()));
 		try (InputStream template = writer.getTemplate("index.html")) {
 			Assertions.assertNotNull(template);
 		} catch (IOException e) {
@@ -43,7 +44,7 @@ public class TestHTMLReportWriterTest {
 	@Test
 	public void writesEnoughFiles() throws IOException {
 		File htmlDir = createTempDirectory(null).toFile();
-		TestReportWriter writer = new TestReportWriter(asList(generateSimpleResults()));
+		TestReportWriter writer = new TestReportWriter(new JulWrapper(), asList(generateSimpleResults()));
 
 		writer.write(htmlDir, new CssRagStatus());
 	}
