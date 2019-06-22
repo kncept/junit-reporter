@@ -13,7 +13,7 @@ This plugin is now released as a community plugin
         id 'com.kncept.junit.reporter' version '2.0.1'
     }
 
-### Applying the long way
+### Applying the long way from maven central
 Add or merge this to the top of your buildscript libraries via the mavenCentral repository:
 
     buildscript {
@@ -65,7 +65,7 @@ Use the following config block (shown with default values):
 		failOnEmpty = true
 	}
 
-# Maven
+# Maven (Experimental support only)
 
 Maven doesn't like running plugins after test failures.
 The plugin can be run directly (assuming the configuration below) with the following command:
