@@ -42,14 +42,15 @@ const nvpHeader = [
 
 //some "nice" pagination size options.
 function pageSizeOptions(data) {
-    if (data.length <= 20)
-        return [10, 20];
-    if (data.length <= 50)
-        return [10, 20, 50];
-    if (data.length <= 100)
-        return [10, 20, 50, 100]
-    if (data.length <= 500)
-        return [10, 20, 50, 100, 500];
+    var len = data.length;
+    if (len <= 20)
+        return [10, Math.min(len, 20)];
+    if (len <= 50)
+        return [10, 20, Math.min(len, 50)];
+    if (len <= 100)
+        return [10, 20, 50, Math.min(len, 100)]
+    if (len <= 500)
+        return [10, 20, 50, 100, Math.min(len, 500)];
     return [10, 20, 50, 100, 500, 1000]; 
 }
 function pageSize(data) {
