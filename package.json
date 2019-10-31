@@ -6,7 +6,8 @@
 	"dependencies": {
 		"react": "16.11.0",
 		"react-dom": "16.11.0",
-		"react-table": "6.10.3"
+		"react-table": "6.10.3",
+		"lodash": ">=4.17.15"
 	},
 	"scripts": {
 		"build": "webpack -p",
