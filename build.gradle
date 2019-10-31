@@ -122,12 +122,17 @@ task generateTestData(type: JavaExec) {
     args '--scan-class-path'
     args '--reports-dir=' + new File(project.projectDir, 'generatedsrc/test/resources/').absolutePath
     ignoreExitValue true
+    outputs.dir "$project.projectDir/generatedsrc/test/resources"
 }
+
 generateTestData.dependsOn compilePretest
 generateTestData.dependsOn initGeneratedDirectories
+processTestResources.dependsOn generateTestData
 test.dependsOn generateTestData
 
 task reportOnTestData(type: JavaExec) {
+    inputs.dir "$project.projectDir/generatedsrc/test/resources"
+    outputs.dir "$project.projectDir/generatedsrc/test/resources"
     classpath = project.sourceSets.main.runtimeClasspath
     main 'com.kncept.junit.reporter.TestReportProcessor'
     args 'testResultsDir=' + new File(project.projectDir, 'generatedsrc/test/resources/').absolutePath
@@ -283,7 +288,10 @@ task generatePluginDescriptor(type: JavaExec, dependsOn: compileJava) {
 	
 	def directory = buildDir.canonicalPath
     def outputDirectory = compileJava.destinationDir.canonicalPath
+    def outputFile = "$project.projectDir/generatedsrc/main/resources/plugin-pom.xml"
 
+    outputs.dir "$buildDir/classes/java/main/META-INF/maven/"
+    outputs.file outputFile
 
     classpath = configurations.mavenEmbedder
     main = 'org.apache.maven.cli.MavenCli'
@@ -291,7 +299,7 @@ task generatePluginDescriptor(type: JavaExec, dependsOn: compileJava) {
     args = [
             '--errors',
             '--batch-mode',
-            "--file", new File(projectDir, "generatedsrc/main/resources/plugin-pom.xml").canonicalPath,
+            "--file", new File(outputFile).canonicalPath,
             //"-Dmaven.multiModuleProjectDirectory=" + projectDir.canonicalPath, //why is this not working...
             "org.apache.maven.plugins:maven-plugin-plugin:3.5.2:descriptor"
     ]
@@ -328,9 +336,11 @@ task generatePluginDescriptor(type: JavaExec, dependsOn: compileJava) {
 	    			}
 	    		}
 	    	}
-	    }.writeTo(new File(projectDir, "generatedsrc/main/resources/plugin-pom.xml").canonicalPath)
+	    }.writeTo(new File(outputFile).canonicalPath)
     }
 }
+sourcesJar.dependsOn generatePluginDescriptor
+processResources.dependsOn generatePluginDescriptor
 jar.dependsOn generatePluginDescriptor
 compileJava.finalizedBy generatePluginDescriptor
 
@@ -348,8 +358,17 @@ node {
 }
 
 task npmBuild(type: NpmTask) {
+  // This task is time-consuming so,
+  // we add inputs and outputs to this task
+  // to make it incremental
+  inputs.dir "$project.projectDir/node_modules"
+  inputs.files("$project.projectDir/package.json", "$project.projectDir/webpack.config.js",
+               "$project.projectDir/src/main/js/main.jsx")
+  outputs.file "$project.projectDir/generatedsrc/main/resources/template/site.js"
   args = ['run', 'build']
 }
+processTestResources.dependsOn initGeneratedDirectories
+testSourcesJar.dependsOn initGeneratedDirectories
 npmBuild.dependsOn initGeneratedDirectories
 npmBuild.dependsOn npmInstall
 processResources.dependsOn npmBuild
