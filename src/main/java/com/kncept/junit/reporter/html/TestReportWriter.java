@@ -1,28 +1,5 @@
 package com.kncept.junit.reporter.html;
 
-import static com.kncept.junit.reporter.json.JsonUtils.toJsMap;
-import static com.kncept.junit.reporter.json.JsonUtils.toJsMapArrayValue;
-import static com.kncept.junit.reporter.json.JsonUtils.toJsMapEmbeddedValue;
-import static com.kncept.junit.reporter.json.JsonUtils.toJsMapStringValue;
-import static com.kncept.junit.reporter.json.JsonUtils.toJsNvpArray;
-
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.PrintStream;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-import java.util.TreeMap;
-
 import com.kncept.junit.reporter.SummaryBucket;
 import com.kncept.junit.reporter.TestRunResults;
 import com.kncept.junit.reporter.domain.CssRagStatus;
@@ -30,6 +7,11 @@ import com.kncept.junit.reporter.domain.TestCase;
 import com.kncept.junit.reporter.logger.Log;
 import com.kncept.junit.reporter.logger.LogFactory;
 import com.kncept.junit.reporter.xml.TestSuite;
+
+import java.io.*;
+import java.util.*;
+
+import static com.kncept.junit.reporter.json.JsonUtils.*;
 
 public class TestReportWriter {
 	private final LogFactory logFactory;
@@ -130,24 +112,32 @@ public class TestReportWriter {
 	
 	private String toJs(int index, boolean suiteHasOutput, String suiteName, String category, TestCase test) {
 		List<String> attrs = new ArrayList<>();
-		attrs.add(toJsMapStringValue("testClass", test.getClassname()));
-		attrs.add(toJsMapStringValue("testName", test.getName()));
-		attrs.add(toJsMapStringValue("duration", test.getDuration().toPlainString()));
-		attrs.add(toJsMapStringValue("status", test.getStatus().name()));
+		attrs.add(toJsMapValue("testClass", test.getClassname()));
+		attrs.add(toJsMapValue("testName", test.getName()));
+		attrs.add(toJsMapValue("duration", test.getDuration().toPlainString()));
+		attrs.add(toJsMapValue("status", test.getStatus().name()));
 		
 		if (test.getUnsuccessfulMessage() != null)
-			attrs.add(toJsMapStringValue("unsuccessfulMessage", test.getUnsuccessfulMessage()));
+			attrs.add(toJsMapValue("unsuccessfulMessage", test.getUnsuccessfulMessage()));
 		if (test.getStackTrace() != null)
-			attrs.add(toJsMapStringValue("stackTrace", test.getStackTrace()));
+			attrs.add(toJsMapValue("stackTrace", test.getStackTrace()));
 		
 		attrs.add(toJsMapArrayValue("systemOut", test.getSystemOut()));
 		attrs.add(toJsMapArrayValue("systemErr", test.getSystemErr()));
-		attrs.add(toJsMapStringValue("testId", Integer.toString(index)));
+
+		attrs.add(toJsMapValue("testHasOutput",
+				test.getUnsuccessfulMessage() != null ||
+				test.getStackTrace() != null ||
+				!test.getSystemOut().isEmpty() ||
+				!test.getSystemErr().isEmpty()
+		));
+
+		attrs.add(toJsMapValue("testId", index));
+
+		attrs.add(toJsMapValue("suiteHasOutput", suiteHasOutput));
+		attrs.add(toJsMapValue("suiteName", suiteName));
 		
-		attrs.add(toJsMapStringValue("suiteHasOutput", Boolean.toString(suiteHasOutput)));
-		attrs.add(toJsMapStringValue("suiteName", suiteName));
-		
-		attrs.add(toJsMapStringValue("category", category));
+		attrs.add(toJsMapValue("category", category));
 		
 		return toJsMap(attrs.toArray(new String[attrs.size()]));
 	}
@@ -159,19 +149,19 @@ public class TestReportWriter {
 		for(TestCase test: suite.testcases()) suiteTotals.include(test);
 
 		return toJsMap(
-				toJsMapStringValue("suiteName", suite.name()),
-				toJsMapStringValue("suiteHasOutput", Boolean.toString(suiteHasOutput)),
+				toJsMapValue("suiteName", suite.name()),
+				toJsMapValue("suiteHasOutput", suiteHasOutput),
 				toJsMapArrayValue("sysout", suite.sysOut()),
 				toJsMapArrayValue("syserr", suite.sysErr()),
 				
 				toJsMapEmbeddedValue("totals", suiteTotals.toString()),
-				
-				toJsMapStringValue("testSuiteProps", toJsNvpArray(suite.testsuiteProperties())),
-				toJsMapStringValue("sysprops", toJsNvpArray(suite.systemProperties())),
-				
-				toJsMapStringValue("category", category),
-				
-				toJsMapStringValue("id", category +"/" + suite.name())
+
+				toJsMapValue("testSuiteProps", toJsNvpArray(suite.testsuiteProperties())),
+				toJsMapValue("sysprops", toJsNvpArray(suite.systemProperties())),
+
+				toJsMapValue("category", category),
+
+				toJsMapValue("id", category +"/" + suite.name())
 		);
 	}
 	

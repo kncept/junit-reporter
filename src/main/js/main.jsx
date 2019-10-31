@@ -23,6 +23,10 @@ const classSummaryHeaders = [
 ];
 
 const testDataHeaders = [
+    //expander logic - show when there is a stack trace or an unsuccessful message. N.B. The row will still EXPAND for output
+    {Header: '', expander: true, Expander: row => row.original.stackTrace != undefined || row.original.unsuccessfulMessage != undefined ?
+        <div className={row.isExpanded ? "rt-expander -open" : "rt-expander"}></div> :
+        null}, //still works when the empty space is clicked!
     {Header: 'Class',    accessor: 'testClass', width: 400},
     {Header: 'Name',     accessor: 'testName',  width: 400},
     {Header: 'Status',   accessor: 'status',    width: 100, Cell: props => <span className={props.value == 'Passed' ? "g" : (props.value == 'Skipped' ? "a" : "r")}>{props.value}</span>},
@@ -98,6 +102,7 @@ class OptionedReactTable extends React.Component {
     render() {
         return <div>
             <ReactTable
+                className="-striped -highlight"
                 data={this.props.data}
                 columns={this.props.columns}
                 filterable={true}
@@ -108,6 +113,30 @@ class OptionedReactTable extends React.Component {
                 SubComponent={this.props.SubComponent}
             />
         </div>
+    }
+}
+
+class TestDetailSubcomponent extends React.Component {
+    render() {
+        var tabNames = [];
+        var tabs = [];
+        if (this.props.row.unsuccessfulMessage != undefined) {
+            tabNames.push("Message");
+            tabs.push(<pre>${this.props.row.unsuccessfulMessage}</pre>);
+        }
+        if (this.props.row.stackTrace != undefined) {
+            tabNames.push("Stack Trace");
+            tabs.push(<pre>${this.props.row.stackTrace}</pre>);
+        }
+        if (this.props.row.systemOut != undefined && this.props.row.systemOut.length != 0) {
+            tabNames.push("System Out");
+            tabs.push(<pre>${this.props.row.systemOut.join("\n")}</pre>);
+        }
+        if (this.props.row.systemErr != undefined && this.props.row.systemErr.length != 0) {
+            tabNames.push("System Error");
+            tabs.push(<pre>${this.props.row.systemErr.join("\n")}</pre>);
+        }
+        return <Tabs titles={tabNames}>{tabs}</Tabs>
     }
 }
 
@@ -135,7 +164,7 @@ ReactDOM.render(
         </div>
         <OptionedReactTable key="packageTotals" data={packageTotals} columns={packageSummaryHeaders} />
         <OptionedReactTable key="classTotals"   data={classTotals}   columns={classSummaryHeaders} />
-        <OptionedReactTable key="tests"         data={tests}         columns={testDataHeaders} SubComponent={(row) => {return row.original.stackTrace == null ? null : <pre>{row.original.stackTrace}</pre>}} />
+        <OptionedReactTable key="tests"         data={tests}         columns={testDataHeaders} SubComponent={(row) => {return <TestDetailSubcomponent row={row.original}/>}} />
         <OptionedReactTable key="testSuites"    data={testSuites}    columns={testSuitesHeader} />
         <OptionedReactTable key="sysprops"      data={buildTimeSystemProperties} columns={nvpHeader} />
         <OptionedReactTable key="envprops"      data={buildTimeEnvironmentProperties} columns={nvpHeader} />

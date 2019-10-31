@@ -36,7 +36,7 @@ sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
 group = 'com.kncept.junit.reporter'
-version = '2.0.2-SNAPSHOT'
+version = '2.1.0'
 
 def jUnit5Version = "5.5.2"
 def jUnit5PlatformVersion = "1.5.2"

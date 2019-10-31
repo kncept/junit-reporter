@@ -29,9 +29,17 @@ public final class JsonUtils {
 		value = value.replaceAll("\"", "\\\\\"");
 		return value;
 	}
-	
-	public static String toJsMapStringValue(String key, String value) {
+
+	public static String toJsMapValue(String key, String value) {
 		return key + ": \"" + addDelimiters(value) + "\"";
+	}
+
+	public static String toJsMapValue(String key, boolean value) {
+		return key + ": " + Boolean.toString(value) ;
+	}
+
+	public static String toJsMapValue(String key, int value) {
+		return key + ": " + value;
 	}
 	
 	public static String toJsMapEmbeddedValue(String key, String value) {
@@ -58,8 +66,8 @@ public final class JsonUtils {
 		while(values.hasNext()) {
 			Map.Entry<String, String> next = values.next();
 			sb.append(toJsMap(
-					toJsMapStringValue("name", next.getKey()),
-					toJsMapStringValue("value", next.getValue())
+					toJsMapValue("name", next.getKey()),
+					toJsMapValue("value", next.getValue())
 			));
 			if(values.hasNext()) {
 				sb.append(",\n");

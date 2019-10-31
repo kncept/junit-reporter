@@ -1,7 +1,7 @@
 # junit-reporter [![Build Status](https://travis-ci.org/kncept/junit-reporter.svg?branch=master)](https://travis-ci.org/kncept/junit-reporter)
 
 A plugin to convert XML test results to HTML and perform some aggregation.<br/>
-No config required by default.<br/>
+There is no config required by default.<br/>
 Also useful if you need the XML files and still want a human-readable output.
 
 # Gradle
@@ -10,7 +10,7 @@ Also useful if you need the XML files and still want a human-readable output.
 This plugin is now released as a community plugin
 
     plugins {
-        id 'com.kncept.junit.reporter' version '2.0.1'
+        id 'com.kncept.junit.reporter' version '2.1.0'
     }
 
 ### Applying the long way from maven central
@@ -21,7 +21,7 @@ Add or merge this to the top of your buildscript libraries via the mavenCentral 
             mavenCentral()
         }
         dependencies {
-            classpath 'com.kncept.junit.reporter:junit-reporter:2.0.1'
+            classpath 'com.kncept.junit.reporter:junit-reporter:2.1.0'
         }
     }
 
@@ -65,12 +65,23 @@ Use the following config block (shown with default values):
 		failOnEmpty = true
 	}
 
+# Command Line Usage
+
+Command line support has been built.<br/>
+The jar file is executable, and the options have the same names as in build configuration blocks.<br/>
+The main class name is com.kncept.junit.reporter.TestReportProcessor.<br/>
+Options use a simple equals sign.<br/>
+ eg: `java -jar junit-reporter-2.1.0.jar failOnEmpty=false` to process reports in the current dir <br/>
+ <br/>
+ An extra 'dir' arg that sets the Results and Reports dir in one go is included:<br/>
+ eg: `java -jar junit-reporter-2.1.0.jar failOnEmpty=false dir=~/path/` to process reports in the ~/path/ dir<br/>
+
 # Maven (Experimental support only)
 
 Maven doesn't like running plugins after test failures.
 The plugin can be run directly (assuming the configuration below) with the following command:
 
-    mvn com.kncept.junit.reporter:junit-reporter:2.0.1:junit-reporter
+    mvn com.kncept.junit.reporter:junit-reporter:2.1.0:junit-reporter
 
 ### Applying
 
@@ -79,7 +90,7 @@ In the project/build/plugins element, add the plugin. Suggested execution bindin
 	<plugin>
 		<groupId>com.kncept.junit.reporter</groupId>
 		<artifactId>junit-reporter</artifactId>
-		<version>2.0.1</version>
+		<version>2.1.0</version>
 		<executions>
 			<execution>
 				<id>junit-reporter</id>
@@ -107,12 +118,4 @@ Defaults are shown below, just delete what you don't need.
 		<failOnEmpty>true</tailOnEmpty>
 	</configuration>
   
-
-
-# Command Line Usage
-Command line support has been built.<br/>
-The jar file is executable, and the options have the same names as in build configuration blocks.<br/>
-The main class name is com.kncept.junit.reporter.TestReportProcessor.<br/>
-Options use a simple equals sign.<br/>
- eg: `java -jar junit-reporter-2.0.1.jar failOnEmpty=false` to process reports in the current dir
 

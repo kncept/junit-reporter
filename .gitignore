@@ -15,6 +15,7 @@ generatedsrc
 #IntelliJ
 .idea
 target
+*.iml
 
 #maven deployment stuff
 gradle.properties
