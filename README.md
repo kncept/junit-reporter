@@ -7,7 +7,7 @@ Also useful if you need the XML files and still want a human-readable output.
 # Gradle
 
 ### Applying the easy way
-This plugin is now released as a community plugin
+This plugin is now released as a [community plugin](https://plugins.gradle.org/plugin/com.kncept.junit.reporter)
 
     plugins {
         id 'com.kncept.junit.reporter' version '2.1.0'
@@ -85,7 +85,7 @@ The plugin can be run directly (assuming the configuration below) with the follo
 
 ### Applying
 
-In the project/build/plugins element, add the plugin. Suggested execution binding is for the 'verify' phase.
+In the project/build/plugins element, [add the plugin](https://search.maven.org/artifact/com.kncept.junit.reporter/junit-reporter/2.1.0/)]. Suggested execution binding is for the 'verify' phase.
 
 	<plugin>
 		<groupId>com.kncept.junit.reporter</groupId>
