@@ -85,7 +85,7 @@ The plugin can be run directly (assuming the configuration below) with the follo
 
 ### Applying
 
-In the project/build/plugins element, [add the plugin](https://search.maven.org/artifact/com.kncept.junit.reporter/junit-reporter/2.1.0/)]. Suggested execution binding is for the 'verify' phase.
+In the project/build/plugins element, [add the plugin](https://search.maven.org/artifact/com.kncept.junit.reporter/junit-reporter/2.1.0/). Suggested execution binding is for the 'verify' phase.
 
 	<plugin>
 		<groupId>com.kncept.junit.reporter</groupId>
